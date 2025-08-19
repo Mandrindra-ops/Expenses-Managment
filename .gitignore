@@ -1,3 +1,5 @@
+#BACKEND
+
 # Node modules
 backend/node_modules/
 
@@ -23,3 +25,30 @@ Thumbs.db
 
 # Optional: VSCode workspace settings
 .vscode/
+
+
+#FRONTEND
+frontend/node_modules
+
+frontend/logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+frontend/.vscode/*
+!frontend/.vscode/extensions.json
+frontend/.idea
+frontend/.DS_Store
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?

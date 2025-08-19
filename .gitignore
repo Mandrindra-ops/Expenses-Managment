@@ -1,0 +1,25 @@
+# Node modules
+backend/node_modules/
+
+# Logs
+backend/*.log
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# Environment variables
+backend/.env
+
+# TypeScript compiled files
+backend/dist/
+backend/*.tsbuildinfo
+
+# Nodemon / ts-node temp files
+backend/.tscache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional: VSCode workspace settings
+.vscode/

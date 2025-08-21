@@ -5,7 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/app.ts",
-    "dev": "nodemon src/app.ts"
+    "dev": "nodemon src/app.ts",
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "db:create:dev": "createdb expense_tracker_dev || echo 'Database might already exist'",
+    "db:create:test": "createdb expense_tracker_test || echo 'Database might already exist'",
+    "db:setup": "npm run db:create:dev && npm run db:create:test",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
   },
   "keywords": [],
   "author": "",

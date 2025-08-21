@@ -1,11 +1,14 @@
 import './App.css'
+// App.tsx
+import TestColor from './assets/component/TestColor';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <>
-      <h1 className='text-green-200 text-5xl'>Hello Everyone !!!</h1>
-    </>
-  )
-}
+    <div>
+      <h1>Bienvenue dans l’app de gestion de dépenses</h1>
+      <TestColor />
+    </div>
+  );
+};
 
-export default App
+export default App;

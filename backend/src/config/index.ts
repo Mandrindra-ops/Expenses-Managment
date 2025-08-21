@@ -1,31 +1,53 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+dotenv.config({ path: path.resolve(__dirname, `../../${envFile}`) });
 
-// Basic configuration - can be expanded later
+// Validate required environment variables
+const requiredEnvVars = [
+  'DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 
+  'DB_PASSWORD', 'JWT_SECRET', 'PORT'
+];
+
+requiredEnvVars.forEach(envVar => {
+  if (!process.env[envVar]) {
+    throw new Error(`Environment variable ${envVar} is required`);
+  }
+});
+
+// Export configuration object
 export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3000', 10),
+  
   database: {
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '5432', 10),
-    name: process.env.DB_NAME || 'expense_tracker_dev',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
+    name: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
   },
+  
   jwt: {
-    secret: process.env.JWT_SECRET || 'fallback_secret_change_in_production',
+    secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  },
+  
+  uploads: {
+    path: process.env.UPLOAD_PATH || './uploads',
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '5242880', 10),
+    allowedTypes: process.env.ALLOWED_FILE_TYPES?.split(',') || [
+      'image/jpeg',
+      'image/png', 
+      'application/pdf'
+    ],
+  },
+  
+  cors: {
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3001',
   },
 };
 
-// Validation for required environment variables
-export const validateEnv = (): void => {
-  const required = ['DB_NAME', 'DB_USER', 'JWT_SECRET'];
-  const missing = required.filter(key => !process.env[key]);
-  
-  if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-  }
-};
+export type Config = typeof config;

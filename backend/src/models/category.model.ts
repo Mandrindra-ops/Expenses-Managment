@@ -1,5 +1,5 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../utils/database';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../utils/database";
 
 class Category extends Model {
   public id!: number;
@@ -30,10 +30,10 @@ Category.init(
     },
   },
   {
-    tableName: 'Categories',
+    tableName: "Categories",
     sequelize,
     indexes: [
-      { unique: true, fields: ['name', 'userId'] } // nom unique par utilisateur
+      { unique: true, fields: ["name", "userId"] }, // nom unique par utilisateur
     ],
     timestamps: true,
   }

@@ -1,14 +1,14 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../utils/database';
-import User from './user.model';
-import Category from './category.model';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../utils/database";
+import User from "./user.model";
+import Category from "./category.model";
 
 interface ExpenseAttributes {
   id: number;
   amount: number;
   date?: string;
   description?: string;
-  type: 'OneTime' | 'Recurring';
+  type: "OneTime" | "Recurring";
   receipt?: string;
   startDate?: string;
   endDate?: string;
@@ -17,15 +17,17 @@ interface ExpenseAttributes {
 }
 
 // `id` sera auto-généré donc optionnel lors de la création
-interface ExpenseCreationAttributes extends Optional<ExpenseAttributes, 'id'> {}
+interface ExpenseCreationAttributes extends Optional<ExpenseAttributes, "id"> {}
 
-class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes>
-  implements ExpenseAttributes {
+class Expense
+  extends Model<ExpenseAttributes, ExpenseCreationAttributes>
+  implements ExpenseAttributes
+{
   public id!: number;
   public amount!: number;
   public date?: string;
   public description?: string;
-  public type!: 'OneTime' | 'Recurring';
+  public type!: "OneTime" | "Recurring";
   public receipt?: string;
   public startDate?: string;
   public endDate?: string;
@@ -53,9 +55,9 @@ Expense.init(
       allowNull: true,
     },
     type: {
-      type: DataTypes.ENUM('OneTime', 'Recurring'),
+      type: DataTypes.ENUM("OneTime", "Recurring"),
       allowNull: false,
-      defaultValue: 'OneTime',
+      defaultValue: "OneTime",
     },
     receipt: {
       type: DataTypes.STRING,
@@ -75,28 +77,28 @@ Expense.init(
       allowNull: false,
       references: {
         model: User,
-        key: 'id',
+        key: "id",
       },
-      onDelete: 'CASCADE',
+      onDelete: "CASCADE",
     },
     categoryId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Category,
-        key: 'id',
+        key: "id",
       },
-      onDelete: 'CASCADE',
+      onDelete: "CASCADE",
     },
   },
   {
-    tableName: 'Expenses',
+    tableName: "Expenses",
     sequelize,
   }
 );
 
 // Relations
-Expense.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Expense.belongsTo(Category, { foreignKey: 'categoryId', onDelete: 'CASCADE' });
+Expense.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+Expense.belongsTo(Category, { foreignKey: "categoryId", onDelete: "CASCADE" });
 
 export default Expense;

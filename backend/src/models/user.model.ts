@@ -1,6 +1,6 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../utils/database';
-import bcrypt from 'bcrypt';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../utils/database";
+import bcrypt from "bcrypt";
 
 class User extends Model {
   public id!: number;
@@ -30,7 +30,7 @@ User.init(
     },
   },
   {
-    tableName: 'Users',
+    tableName: "Users",
     sequelize,
     hooks: {
       beforeCreate: async (user: User) => {

@@ -1,7 +1,7 @@
 import './App.css'
 // App.tsx
-import TestColor from './assets/components/TestColor';
-import Login from './assets/components/forms/LoginForm';
+import TestColor from './components/TestColor';
+import Login from './components/forms/LoginForm';
 
 const App: React.FC = () => {
   return (

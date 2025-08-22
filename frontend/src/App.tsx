@@ -1,12 +1,12 @@
 import './App.css'
 // App.tsx
 import TestColor from './assets/component/TestColor';
+import Login from './assets/component/forms/LoginForm';
 
 const App: React.FC = () => {
   return (
-    <div>
-      <h1>Bienvenue dans l’app de gestion de dépenses</h1>
-      <TestColor />
+    <div className="grid w-[100%] h-screen place-items-center bg-cyan-400">
+      <Login />
     </div>
   );
 };

@@ -1,22 +1,23 @@
-const express = require('express')
-const app = express()
-const port = 3000
-import {connection} from './config/database';
-import { uploadReceipt } from './config/multer';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import authRoutes from './routes/auth.route';
+import sequelize from './utils/database';
 
+dotenv.config();
+
+const app = express();
+
+// Middlewares globaux
+app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-});
+// Routes
+app.use('/api/auth', authRoutes);
 
-app.post('/upload', uploadReceipt.single('receipt'), (req, res) => {
-  res.send('File uploaded successfully');
-});
+// Vérification de la connexion DB
+sequelize.authenticate()
+  .then(() => console.log('✅ Database connected'))
+  .catch((err) => console.error('❌ Database connection error:', err));
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
-connection();  
-
+export default app;

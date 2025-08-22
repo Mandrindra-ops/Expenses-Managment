@@ -49,5 +49,5 @@ export const getPoolStats = () => {
     totalCount: pool.totalCount,
     idleCount: pool.idleCount,
     waitingCount: pool.waitingCount,
-  };
+  }
 };

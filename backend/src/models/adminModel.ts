@@ -1,6 +1,6 @@
-// models/User.ts
-// Sequelize-Typescript model for the `users` table
-// Requires: bcryptjs for password hashing
+// models/Admin.ts
+// Sequelize-Typescript model for the `admins` table
+// Requires: npm i sequelize-typescript bcryptjs && npm i -D @types/bcryptjs
 
 import {
   Table,
@@ -10,22 +10,18 @@ import {
   PrimaryKey,
   AutoIncrement,
   AllowNull,
-  Unique,
   Default,
+  Unique,
   BeforeCreate,
   BeforeUpdate,
-  HasMany,
 } from 'sequelize-typescript';
 import bcrypt from 'bcryptjs';
-import { Expense } from './expenseModel';
-import { Income } from './incomeModel';
-import { Category } from './categoryModel';
 
 @Table({
-  tableName: 'users',
-  timestamps: false, // only created_at
+  tableName: 'admins',
+  timestamps: false, // we only have created_at in the migration
 })
-export class User extends Model<User> {
+export class Admin extends Model<Admin> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
@@ -41,41 +37,35 @@ export class User extends Model<User> {
 
   @AllowNull(false)
   @Column(DataType.STRING(255))
-  password!: string;
+  password!: string; // hashed value will be stored
+
+  @Default('admin')
+  @Column(DataType.STRING(50))
+  role!: string; // e.g., 'admin' | 'superadmin'
 
   @Default(DataType.NOW)
   @Column(DataType.DATE)
   created_at!: Date;
 
-  // --- Hooks to hash password ---
+  // --- Hooks to hash password when creating/updating ---
   @BeforeCreate
   @BeforeUpdate
-  static async hashPassword(instance: User) {
+  static async hashPassword(instance: Admin) {
     if (instance.changed('password')) {
       const salt = await bcrypt.genSalt(10);
       instance.password = await bcrypt.hash(instance.password, salt);
     }
   }
 
-  // Helper to verify password
+  // Helper to verify a plain text password against the stored hash
   async checkPassword(plain: string): Promise<boolean> {
     return bcrypt.compare(plain, this.password);
   }
 
-  // Hide sensitive data in JSON
+  // Hide sensitive fields when converting to JSON
   toJSON() {
     const values = { ...this.get() } as Record<string, any>;
     delete values.password;
     return values;
   }
-
-  // Relations
-  @HasMany(() => Expense)
-  expenses!: Expense[];
-
-  @HasMany(() => Income)
-  incomes!: Income[];
-
-  @HasMany(() => Category)
-  categories!: Category[];
 }

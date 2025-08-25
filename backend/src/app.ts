@@ -1,10 +1,22 @@
-import express from 'express';
-import authRoutes from './routes/authRoutes';
+const express = require('express')
+const app = express()
+const port = 3000
+import {connection} from './config/database';
+import { uploadReceipt } from './config/multer';
 
-const app = express();
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+});
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.post('/upload', uploadReceipt.single('receipt'), (req, res) => {
+  res.send('File uploaded successfully');
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
+connection();  
+

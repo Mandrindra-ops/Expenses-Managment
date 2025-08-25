@@ -1,81 +1,43 @@
-// models/User.ts
-// Sequelize-Typescript model for the `users` table
-// Requires: bcryptjs for password hashing
+import { DataTypes, Sequelize } from 'sequelize';
 
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  PrimaryKey,
-  AutoIncrement,
-  AllowNull,
-  Unique,
-  Default,
-  BeforeCreate,
-  BeforeUpdate,
-  HasMany,
-} from 'sequelize-typescript';
-import bcrypt from 'bcryptjs';
-import { Expense } from './expenseModel';
-import { Income } from './incomeModel';
-import { Category } from './categoryModel';
+export const createUserModel = (sequelize: Sequelize) => {
+  const User = sequelize.define('User', {
+    userId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM('user', 'admin'),
+      allowNull: false,
+      defaultValue: 'user',
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+  });
 
-@Table({
-  tableName: 'users',
-  timestamps: false, // only created_at
-})
-export class User extends Model<User> {
-  @PrimaryKey
-  @AutoIncrement
-  @Column(DataType.INTEGER)
-  id!: number;
-
-  @AllowNull(false)
-  @Unique(true)
-  @Column({
-    type: DataType.STRING(255),
-    validate: { isEmail: true },
-  })
-  email!: string;
-
-  @AllowNull(false)
-  @Column(DataType.STRING(255))
-  password!: string;
-
-  @Default(DataType.NOW)
-  @Column(DataType.DATE)
-  created_at!: Date;
-
-  // --- Hooks to hash password ---
-  @BeforeCreate
-  @BeforeUpdate
-  static async hashPassword(instance: User) {
-    if (instance.changed('password')) {
-      const salt = await bcrypt.genSalt(10);
-      instance.password = await bcrypt.hash(instance.password, salt);
-    }
-  }
-
-  // Helper to verify password
-  async checkPassword(plain: string): Promise<boolean> {
-    return bcrypt.compare(plain, this.password);
-  }
-
-  // Hide sensitive data in JSON
-  toJSON() {
-    const values = { ...this.get() } as Record<string, any>;
-    delete values.password;
-    return values;
-  }
-
-  // Relations
-  @HasMany(() => Expense)
-  expenses!: Expense[];
-
-  @HasMany(() => Income)
-  incomes!: Income[];
-
-  @HasMany(() => Category)
-  categories!: Category[];
-}
+  return User;
+};

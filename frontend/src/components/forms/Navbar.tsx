@@ -1,8 +1,6 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 
-interface NavbarProps {
-
-}
+interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = () => {
   return (
@@ -25,22 +23,20 @@ const Navbar: React.FC<NavbarProps> = () => {
         <span className="text-xl font-bold text-gray-900">Expense Tracker</span>
       </div>
       <div className="flex gap-3">
-        <a
-          href="/login"
+        <Link
+          to="/login?mode=login"
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline focus:outline-blue-600 focus:outline-offset-2 text-base"
-          tabIndex={0}
           aria-label="Navigate to login page"
         >
           Login
-        </a>
-        <a
-          href="/signup"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline focus:outline-blue-600 focus:outline-offset-2 text-base"
-          tabIndex={0}
+        </Link>
+        <Link
+          to="/login?mode=signup"
+          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline focus:outline-green-600 focus:outline-offset-2 text-base"
           aria-label="Navigate to sign up page"
         >
           Sign Up
-        </a>
+        </Link>
       </div>
     </nav>
   );

@@ -1,14 +1,13 @@
-import './App.css'
-// App.tsx
-import TestColor from './components/TestColor';
-
+import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import LoginForm from './components/forms/LoginForm';
 
 const App: React.FC = () => {
   return (
-    <div>
-      <HomePage/>
-    </div>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginForm />} />
+    </Routes>
   );
 };
 

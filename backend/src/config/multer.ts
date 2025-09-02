@@ -1,13 +1,14 @@
-import multer = require('multer');
-import path = require('path');
+
+const multer = require("multer");
+const path = require("path");
 
 // Storage settings
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/receipts'); 
+    cb(null, "uploads/receipts"); 
   },
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
+    const uniqueName = Date.now() + "-" + file.originalname;
     cb(null, uniqueName);
   },
 });
@@ -20,6 +21,6 @@ export const uploadReceipt = multer({
     const allowedTypes = /jpeg|jpg|png|pdf/;
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowedTypes.test(ext)) cb(null, true);
-    else cb(new Error('Only JPG, PNG, or PDF files are allowed'));
+    else cb(new Error("Only JPG, PNG, or PDF files are allowed"));
   },
 });

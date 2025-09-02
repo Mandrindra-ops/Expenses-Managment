@@ -6,7 +6,7 @@ import { createAdminModel } from '../models/adminModel';
 import { createCategoryModel } from '../models/categoryModel';
 import { createIncomingTrackingModel } from '../models/incomeModel';
 import { createUserModel } from '../models/userModel'; // new
-
+import { seedDefaultCategories } from "../seeders/seedCategories";
 // DB config
 const dbName = process.env.DB_NAME!;
 const dbUser = process.env.DB_USER!;
@@ -20,6 +20,10 @@ const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   port: dbPort,
   dialect: 'postgres',
 });
+
+
+
+// Exporting the initialized models   
 
 // Models
 export let expenseModel: any = null;
@@ -51,6 +55,9 @@ export const connection = async () => {
     // Sync models
     await sequelize.sync({ alter: true });
     console.log('✅ Models synchronized!');
+    // Seed default categories
+    await seedDefaultCategories(categoryModel);
+    console.log('✅ Default categories seeded!');
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
   }

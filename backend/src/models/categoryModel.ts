@@ -1,18 +1,25 @@
- // models/category.ts
-import { DataTypes, Sequelize } from 'sequelize';
+
+import { DataTypes, Sequelize } from "sequelize";
 
 export const createCategoryModel = (sequelize: Sequelize) => {
-  const Category = sequelize.define('Category', {
+  const Category = sequelize.define("Category", {
     idCategory: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       autoIncrement: true,
+      primaryKey: true,
     },
     name: {
       type: DataTypes.STRING,
-      unique: true, // no duplicate category names
       allowNull: false,
+      unique: true,
     },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }, {
+    tableName: "Categories",
+    timestamps: true,
   });
 
   return Category;

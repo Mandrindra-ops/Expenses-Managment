@@ -24,19 +24,7 @@ export const createUserModel = (sequelize: Sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    role: {
-      type: DataTypes.ENUM('user', 'admin'),
-      allowNull: false,
-      defaultValue: 'user',
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
+   
   });
 
   return User;

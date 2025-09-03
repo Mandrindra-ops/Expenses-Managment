@@ -3,6 +3,7 @@ const app = express()
 const port = 3000
 import {connection} from './config/database';
 import { uploadReceipt } from './config/multer';
+import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 
 import expenseRoutes from "./routes/expenseRoutes";
@@ -11,6 +12,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 app.use(express.json());
+app.use(cors());
 // ✅ Optional: parse URL-encoded forms (for form submissions)
 app.use(express.urlencoded({ extended: true }));
 

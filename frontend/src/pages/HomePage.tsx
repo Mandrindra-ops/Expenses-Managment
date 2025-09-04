@@ -6,7 +6,9 @@ import Footer from '../components/forms/Footer';
 const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50">
-      <Navbar />
+      <div className=" w-full">
+        <Navbar />
+      </div>
       <HeroSection totalTracked="$134M" />
       <Footer />
     </div>

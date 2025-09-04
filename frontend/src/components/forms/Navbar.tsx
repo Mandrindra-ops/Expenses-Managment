@@ -4,8 +4,8 @@ interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = () => {
   return (
-    <nav className="flex items-center justify-between p-2 bg-white shadow-sm max-w-7xl mx-auto w-full">
-      <div className="flex items-center gap-3">
+    <nav className="flex items-center justify-between p-2 bg-white shadow-sm w-full">
+      <div className="flex items-center gap-3 px-4">
         <svg
           className="w-8 h-8 text-blue-600"
           fill="none"

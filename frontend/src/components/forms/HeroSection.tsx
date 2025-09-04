@@ -18,13 +18,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ totalTracked }) => {
           </p>
         </div>
         <div className="relative">
-          <video
-            autoPlay
-            loop
-            muted
-            src="/images/laptop-animation.webm"
+          <img
+            src='/images/hero-video.gif'
+            alt="Animated illustration of a person working on a laptop"
             className="w-full rounded-lg"
-            aria-label="Animated illustration of a person working on a laptop"
           />
           <div
             className="bg-white p-3 rounded-md shadow-md absolute bottom-3 right-3"

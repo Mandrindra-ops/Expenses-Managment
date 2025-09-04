@@ -1,46 +1,42 @@
-import { DataTypes, Sequelize, Model, Optional } from "sequelize";
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../utils/database';
 
-interface CategoryAttributes {
-  id: number;
-  name: string;
-  description?: string;
-}
-
-interface CategoryCreationAttributes extends Optional<CategoryAttributes, "id"> {}
-
-export class Category extends Model<CategoryAttributes, CategoryCreationAttributes>
-  implements CategoryAttributes {
-  public id!: number;
+class Category extends Model {
+  public idCategory!: number;
   public name!: string;
   public description?: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public userId!: number; // Pour le user-scoped query
 }
 
-export const initCategoryModel = (sequelize: Sequelize) => {
-  Category.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      description: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
+Category.init(
+  {
+    idCategory: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    {
-      sequelize,
-      tableName: "categories",
-      timestamps: true,
-    }
-  );
-  return Category;
-};
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: false, // La combinaison userId + name doit être unique
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: 'Categories',
+    sequelize,
+    indexes: [
+      { unique: true, fields: ['name', 'userId'] } // nom unique par utilisateur
+    ],
+    timestamps: true,
+  }
+);
+
+export default Category;

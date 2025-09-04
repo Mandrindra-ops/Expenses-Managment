@@ -1,5 +1,6 @@
 'use strict';
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Categories', {
@@ -11,11 +12,20 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
       },
       description: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users', // Assurez-vous que la table Users existe
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -28,6 +38,9 @@ module.exports = {
         defaultValue: Sequelize.literal('NOW()'),
       },
     });
+
+    // Optionnel : créer un index unique sur (userId, name) pour que chaque utilisateur ait des noms uniques
+    await queryInterface.addIndex('Categories', ['userId', 'name'], { unique: true });
   },
 
   async down(queryInterface, Sequelize) {

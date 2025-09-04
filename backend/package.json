@@ -4,38 +4,33 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/app.ts",
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "db:create:dev": "createdb expense_tracker_dev || echo 'Database might already exist'",
-    "db:create:test": "createdb expense_tracker_test || echo 'Database might already exist'",
-    "db:setup": "npm run db:create:dev && npm run db:create:test",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "start": "node dist/server.js",
+    "sequelize": "npx sequelize"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
-    "path": "^0.12.7",
     "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "nodemon": "^3.1.10",
+    "sequelize-cli": "^6.6.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }

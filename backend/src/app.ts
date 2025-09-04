@@ -1,36 +1,23 @@
-const express = require('express')
-const app = express()
-const port = 3000
-import {connection} from './config/database';
-import { uploadReceipt } from './config/multer';
-import userRoutes from "./routes/userRoutes";
-
-import expenseRoutes from "./routes/expenseRoutes";
-import categoryRoutes from "./routes/categoryRoutes";
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import authRoutes from './routes/auth.route';
+import sequelize from './utils/database';
 
 dotenv.config();
+
+const app = express();
+
+// Middlewares globaux
+app.use(cors());
 app.use(express.json());
-// ✅ Optional: parse URL-encoded forms (for form submissions)
-app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use("/api/auth", userRoutes);
-app.use("/api/expenses", expenseRoutes);
+app.use('/api/auth', authRoutes);
 
+// Vérification de la connexion DB
+sequelize.authenticate()
+  .then(() => console.log('✅ Database connected'))
+  .catch((err) => console.error('❌ Database connection error:', err));
 
-app.use("/categories", categoryRoutes);
-
-
-
-
-app.post('/upload', uploadReceipt.single('receipt'), (req, res) => {
-  res.send('File uploaded successfully');
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
-connection();  
-
+export default app;

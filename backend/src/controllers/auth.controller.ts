@@ -13,6 +13,11 @@ export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
+    // Vérification des champs requis
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -20,10 +25,10 @@ export const signup = async (req: Request, res: Response) => {
     }
 
     // Hasher le mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10); -> car déjà hasher dans le user.model.ts de models
 
     // Créer l'utilisateur
-    const user = await User.create({ email, password: hashedPassword });
+    const user = await User.create({ email, password });
 
     // Réponse
     res.status(201).json({ id: user.id, email: user.email });
@@ -64,16 +69,13 @@ export const login = async (req: Request, res: Response) => {
 
 /**
  * Me - renvoyer les informations de l'utilisateur connecté
- * Cette route doit utiliser le middleware authenticateToken
  */
 export const me = async (req: Request, res: Response) => {
   try {
-    // L'utilisateur a été ajouté à req.user par le middleware
     const user = req.user;
 
     if (!user) return res.status(401).json({ message: 'Unauthorized' });
 
-    // Renvoyer les infos essentielles
     res.json({ id: user.id, email: user.email });
   } catch (error: any) {
     console.error(error);

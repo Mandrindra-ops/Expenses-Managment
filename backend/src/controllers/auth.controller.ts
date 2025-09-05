@@ -15,6 +15,7 @@ dotenv.config();
 /**
  * Signup - créer un nouvel utilisateur
  */
+
 export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;

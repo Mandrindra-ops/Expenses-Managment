@@ -41,6 +41,7 @@ Income.init(
       autoIncrement: true,
       primaryKey: true,
     },
+<<<<<<< HEAD
     amount: {
       type: DataTypes.DOUBLE,
       allowNull: false,
@@ -88,6 +89,12 @@ Income.init(
     tableName: "Incomes",
     timestamps: true,
   }
+=======
+    {
+        sequelize,
+        tableName: 'Incomes',
+    }
+>>>>>>> 1fe6457 ([add] finalize income table and endpoints)
 );
 
 Income.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });

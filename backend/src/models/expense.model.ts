@@ -1,97 +1,102 @@
-import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../utils/database';
+import User from './user.model';
+import Category from './category.model';
 
 interface ExpenseAttributes {
   id: number;
   amount: number;
-  date?: Date;
-  categoryId: number;
+  date?: string;
   description?: string;
-  type: 'one-time' | 'recurring';
-  creationDate?: Date;
-  startDate?: Date;
-  endDate?: Date;
-  receiptPath?: string;
-  receiptType?: 'jpg' | 'png' | 'pdf';
-  receiptUploadedAt?: Date;
+  type: 'OneTime' | 'Recurring';
+  receipt?: string;
+  startDate?: string;
+  endDate?: string;
+  userId: number;
+  categoryId: number;
 }
 
-interface ExpenseCreationAttributes extends Optional<ExpenseAttributes, "id" | "creationDate"> {}
+// `id` sera auto-généré donc optionnel lors de la création
+interface ExpenseCreationAttributes extends Optional<ExpenseAttributes, 'id'> {}
 
-export class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes>
+class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes>
   implements ExpenseAttributes {
   public id!: number;
   public amount!: number;
-  public date?: Date;
-  public categoryId!: number;
+  public date?: string;
   public description?: string;
-  public type!: 'one-time' | 'recurring';
-  public creationDate?: Date;
-  public startDate?: Date;
-  public endDate?: Date;
-  public receiptPath?: string;
-  public receiptType?: 'jpg' | 'png' | 'pdf';
-  public receiptUploadedAt?: Date;
+  public type!: 'OneTime' | 'Recurring';
+  public receipt?: string;
+  public startDate?: string;
+  public endDate?: string;
+  public userId!: number;
+  public categoryId!: number;
 }
 
-export const initExpenseModel = (sequelize: Sequelize) => {
-  Expense.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      amount: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      date: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      categoryId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      type: {
-        type: DataTypes.ENUM('one-time', 'recurring'),
-        allowNull: false,
-        defaultValue: 'one-time',
-      },
-      creationDate: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-      startDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      endDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      receiptPath: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      receiptType: {
-        type: DataTypes.ENUM('jpg', 'png', 'pdf'),
-        allowNull: true,
-      },
-      receiptUploadedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
+Expense.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      sequelize,
-      tableName: 'expenses',
-      timestamps: true,
-    }
-  );
-  return Expense;
-};
+    amount: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    type: {
+      type: DataTypes.ENUM('OneTime', 'Recurring'),
+      allowNull: false,
+      defaultValue: 'OneTime',
+    },
+    receipt: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    startDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    endDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Category,
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
+  },
+  {
+    tableName: 'Expenses',
+    sequelize,
+  }
+);
+
+// Relations
+Expense.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Expense.belongsTo(Category, { foreignKey: 'categoryId', onDelete: 'CASCADE' });
+
+export default Expense;

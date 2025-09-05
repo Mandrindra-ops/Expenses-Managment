@@ -1,17 +1,15 @@
-
-import { Router } from 'express';
-// import { createExpense, getExpenseById, getExpenses, updateExpense, deleteExpense } from '../controllers/expense.controller';
+import { Router } from "express";
 import { authenticateJWT } from '../middlewares/auth.middleware';
-// import upload from '../middlewares/upload.middleware';
+import { createIncome, deleteIncome, getIncome, getIncomes, updateIncome } from "../controllers/income.controller";
 
 const router = Router();
 
-// Protéger la route et accepter un seul fichier nommé "receipt"
-router.post('/', authenticateJWT, upload.single('receipt' , createIncome);
-router.get('/', authenticateJWT, getIncomes);
-router.get('/:id', authenticateJWT, getExpenseById);
-router.put('/:id', authenticateJWT, updateExpense)
-router.delete('/:id', authenticateJWT, deleteExpense)
+router.use(authenticateJWT);
 
+router.get('/', getIncomes);
+router.post('/', createIncome);
+router.get('/:id', getIncome);
+router.put('/:id',updateIncome);
+router.delete('/:id', deleteIncome);
 
 export default router;

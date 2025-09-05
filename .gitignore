@@ -37,7 +37,6 @@ backend/*.pid.lock
 
 # Uploads
 backend/uploads/
-backend/test-uploads/
 
 
 

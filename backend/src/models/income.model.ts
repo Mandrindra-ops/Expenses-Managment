@@ -1,4 +1,7 @@
-import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import User from './user.model';
+import sequelize from '../utils/database';
+
 
 interface IncomeAttributes {
   id: number;
@@ -10,6 +13,7 @@ interface IncomeAttributes {
   receiptPath?: string;
   receiptType?: 'jpg' | 'png' | 'pdf';
   receiptUploadedAt?: Date;
+  userId: number;
 }
 
 interface IncomeCreationAttributes extends Optional<IncomeAttributes, 'id' | 'creationDate'> {}
@@ -25,54 +29,67 @@ export class Income extends Model<IncomeAttributes, IncomeCreationAttributes>
   public receiptPath?: string;
   public receiptType?: 'jpg' | 'png' | 'pdf';
   public receiptUploadedAt?: Date;
+  public userId!: number;
 }
 
-export const initIncomeModel = (sequelize: Sequelize) => {
-  Income.init(
+
+Income.init(
     {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      amount: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-      },
-      date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      source: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      creationDate: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-      receiptPath: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      receiptType: {
-        type: DataTypes.ENUM('jpg', 'png', 'pdf'),
-        allowNull: true,
-      },
-      receiptUploadedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        amount: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+        },
+        date: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
+        source: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        creationDate: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
+        receiptPath: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        receiptType: {
+            type: DataTypes.ENUM('jpg', 'png', 'pdf'),
+            allowNull: true,
+        },
+        receiptUploadedAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: User,
+                key: 'id',
+            },
+            onDelete: 'CASCADE',
+        },
     },
     {
-      sequelize,
-      tableName: 'incomes',
-      timestamps: true,
+        sequelize,
+        tableName: 'Incomes',
+        timestamps: true,
     }
-  );
-  return Income;
-};
+);
+
+
+Income.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+
+export default Income;

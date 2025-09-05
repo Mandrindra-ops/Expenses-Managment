@@ -1,23 +1,23 @@
-import { Request, Response } from 'express';
+import { Request,Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 import dotenv from 'dotenv';
-
+import { userValidator } from '../validator/user.validator';
 dotenv.config();
 
 /**
  * Signup - créer un nouvel utilisateur
  */
+
 export const signup = async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
-
+    try {
+    const result = userValidator(req.body);
     // Vérification des champs requis
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+    if (result.status === "error") {
+      return res.status(400).json({ message: result.data.message });
     }
-
+    const {email, password} = result.data;
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -29,7 +29,6 @@ export const signup = async (req: Request, res: Response) => {
 
     // Créer l'utilisateur
     const user = await User.create({ email, password });
-
     // Réponse
     res.status(201).json({ id: user.id, email: user.email });
   } catch (error: any) {
@@ -43,7 +42,12 @@ export const signup = async (req: Request, res: Response) => {
  */
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const result = userValidator(req.body);
+    // Vérification des champs requis
+    if (result.status === "error") {
+      return res.status(400).json({ message: result.data.message });
+    }
+    const {email, password} = result.data;
 
     // Chercher l'utilisateur
     const user = await User.findOne({ where: { email } });

@@ -86,6 +86,7 @@ Income.init(
   {
     sequelize,
     tableName: "Incomes",
+    timestamps: true,
   }
 );
 

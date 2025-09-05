@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route';
 import categoryRoutes from './routes/category.route';
+import expenseRoutes from './routes/expense.route'
 import sequelize from './utils/database';
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // Vérification de la connexion DB
 sequelize.authenticate()

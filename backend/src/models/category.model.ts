@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../utils/database';
 
 class Category extends Model {
-  public idCategory!: number;
+  public id!: number;
   public name!: string;
   public description?: string;
   public userId!: number; // Pour le user-scoped query
@@ -10,7 +10,7 @@ class Category extends Model {
 
 Category.init(
   {
-    idCategory: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,

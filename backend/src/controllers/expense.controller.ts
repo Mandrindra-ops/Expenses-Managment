@@ -129,7 +129,11 @@ export const deleteExpense = async (req: Request, res: Response) => {
       try {
         await fs.unlink(expense.receipt);
       } catch (unlinkError) {
+<<<<<<< HEAD
         console.error("Error deleting receipt file:", unlinkError);
+=======
+        console.error('Error deleting receipt file:', unlinkError);
+>>>>>>> 7d23df9 ([fix] add unlink receipt on delete if)
       }
     }
 

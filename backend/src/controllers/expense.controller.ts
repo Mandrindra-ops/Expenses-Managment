@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Expense from "../models/expense.model";
-import multer from "multer";
+import fs from "fs/promises";
 
 interface CreateExpenseBody {
   amount: number;
@@ -126,7 +126,11 @@ export const deleteExpense = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Expense not found" });
     }
     if (expense.receipt) {
-      // TODO:destroy receipt
+      try {
+        await fs.unlink(expense.receipt);
+      } catch (unlinkError) {
+        console.error('Error deleting receipt file:', unlinkError);
+      }
     }
 
     await expense.destroy();

@@ -3,37 +3,33 @@ import { Request, Response } from "express";
 
 export const getMonthlySummary = async (req: Request, res: Response) => {
   try {
-    const { month } = req.query;
-    const userId = req.user?.id;
-    if (!userId) {
-      res.status(403);
-      throw new Error("UnAuthoticated user");
+    const user = req.user;
+    if (!user) {
+      throw new Error("Unauthentificatied user");
     }
-    const result = await SummaryService.getMonthlySummary(
-      String(userId),
-      String(month)
-    );
-    res.json(result);
+    const summary = await SummaryService.getMonthlySummary(user.id.toString());
+
+    res.json(summary);
   } catch (error) {
-    if (error instanceof Error)
-      res.status(500).json({ message: error.message });
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 };
+
 export const getBudgetAlerts = async (req: Request, res: Response) => {
   try {
-    const { month } = req.query;
-    const userId = req.user?.id;
+    const userId = String(req.user?.id);
     if (!userId) {
-      res.status(403).json({ message: "UnAuthenticated User" });
+      res.status(403).json({ message: "unauthenticated User" });
     }
-    const alerts = await SummaryService.getAlerts(
-      String(userId),
-      String(month)
-    );
+    const alerts = await SummaryService.getAlerts(userId);
     res.json(alerts);
   } catch (error) {
-    if (error instanceof Error)
+    if (error instanceof Error) {
+      console.trace(error.message);
       res.status(500).json({ message: error.message });
+    }
   }
 };
 export const getCustomSummary = async (req: Request, res: Response) => {
@@ -53,15 +49,12 @@ export const getCustomSummary = async (req: Request, res: Response) => {
     if (!userId) {
       return res.status(403).json({ message: "UnAuthenticated User" });
     }
-    const alerts = await SummaryService.getSummary(
+    const customSummary = await SummaryService.getSummary(
       userId,
       startDateParse,
       endDateParse
     );
-    res.json({
-      periode: [startDateParse, endDateParse],
-      ...alerts,
-    });
+    res.json({ customSummary });
   } catch (error) {
     if (error instanceof Error)
       res.status(500).json({ message: error.message });

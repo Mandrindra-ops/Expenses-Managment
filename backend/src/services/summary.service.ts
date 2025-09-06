@@ -1,43 +1,103 @@
 import { Op } from "sequelize";
 import Income from "../models/income.model";
 import Expense from "../models/expense.model";
+import sequelize from "../utils/database";
+import Category from "../models/category.model";
 
 export class SummaryService {
   static async getSummary(userId: string, start: Date, end: Date) {
-    const incomes = await Income.findAll({
-      where: { userId, date: { [Op.between]: [start, end] } },
-    });
-    const where = {
-        userId,
-        [Op.or]: [
-          { type: "one-time", date: { [Op.between]: [start, end] } },
-          {
-            type: "recurring",
-            startDate: { [Op.lte]: end },
-            [Op.or]: [{ endDate: null }, { endDate: { [Op.gte]: start } }],
+    const [totalExpenses, totalIncome, expensesByCategory, incomeBySource] =
+      await Promise.all([
+        Expense.sum("amount", {
+          where: {
+            userId,
+            date: {
+              [Op.between]: [start, end],
+            },
           },
-        ],
-      }
-    const expenses = await Expense.findAll({where});
+        }),
+        Income.sum("amount", {
+          where: {
+            userId,
+            date: {
+              [Op.between]: [start, end],
+            },
+          },
+        }),
+        Expense.findAll({
+          attributes: [[sequelize.fn("SUM", sequelize.col("amount")), "total"]],
+          where: {
+            userId,
+            date: {
+              [Op.between]: [start, end],
+            },
+          },
+          include: [
+            {
+              model: Category,
+              attributes: ["name"],
+            },
+          ],
+          group: ["categoryId", "Category.id", "Category.name"],
+          raw: false,
+        }),
+        Income.findAll({
+          attributes: [
+            "source",
+            [sequelize.fn("SUM", sequelize.col("amount")), "total"],
+          ],
+          where: {
+            userId,
+            date: {
+              [Op.between]: [start, end],
+            },
+          },
+          group: ["source"],
+          raw: true,
+        }),
+      ]);
 
-    const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0);
-    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-    return { totalIncome, totalExpenses, balance: totalIncome - totalExpenses };
+    const balance = (totalIncome || 0) - (totalExpenses || 0);
+
+    return {
+      period: { start, end },
+      totalExpenses: totalExpenses || 0,
+      totalIncome: totalIncome || 0,
+      balance,
+      expensesByCategory: expensesByCategory.map((expense) => ({
+        category: expense.categoryId,
+        total: expense.dataValues,
+      })),
+      incomeBySource: incomeBySource.filter((income) => income.source),
+    };
   }
 
-  static async getMonthlySummary(userId: string, month: string) {
-    const [year, m] = month.split("-").map(Number);
-    const start = new Date(year, m - 1, 1);
-    const end = new Date(year, m, 0, 23, 59, 59);
-    return this.getSummary(userId, start, end);
+  static async getMonthlySummary(userId: string, month?: string) {
+    let startDate, endDate;
+
+    if (month && typeof month == "string") {
+      const [year, monthnum] = month.split("-").map(Number);
+      startDate = new Date(year, monthnum - 1, 1);
+      endDate = new Date(year, monthnum + 1, 0);
+      console.log({ startDate, endDate });
+    } else {
+      const now = new Date();
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      console.log({ startDate, endDate });
+    }
+
+    return this.getSummary(userId, startDate, endDate);
   }
 
-  static async getAlerts(userId: string, month: string) {
-    const summary = await this.getMonthlySummary(userId, month);
+  static async getAlerts(userId: string) {
+    const summary = await this.getMonthlySummary(userId);
     if (summary.totalExpenses > summary.totalIncome) {
       return {
         alert: true,
-        message: `You've exceeded your monthly budget by $${summary.totalExpenses - summary.totalIncome}`,
+        message: `You've exceeded your monthly budget by $${
+          summary.totalExpenses - summary.totalIncome
+        }`,
       };
     }
     return { alert: false };

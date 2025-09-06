@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import Expense from '../models/expense.model';
-import multer from 'multer';
+import { Request, Response } from "express";
+import Expense from "../models/expense.model";
+import multer from "multer";
 
 interface CreateExpenseBody {
   amount: number;
   date?: string;
   categoryId: number;
-  type?: 'OneTime' | 'Recurring';
+  type?: "OneTime" | "Recurring";
   description?: string;
   startDate?: string;
   endDate?: string;
@@ -19,7 +19,7 @@ export const createExpense = async (req: Request, res: Response) => {
       amount,
       date,
       categoryId,
-      type = 'OneTime',
+      type = "OneTime",
       description,
       startDate,
       endDate,
@@ -42,7 +42,7 @@ export const createExpense = async (req: Request, res: Response) => {
     res.status(201).json(expense);
   } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -64,7 +64,7 @@ export const getExpenses = async (req: Request, res: Response) => {
     res.json(expenses);
   } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -75,12 +75,12 @@ export const getExpenseById = async (req: Request, res: Response) => {
       where: { id: req.params.id, userId: req.user!.id },
     });
 
-    if (!expense) return res.status(404).json({ message: 'Expense not found' });
+    if (!expense) return res.status(404).json({ message: "Expense not found" });
 
     res.json(expense);
   } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -91,7 +91,7 @@ export const updateExpense = async (req: Request, res: Response) => {
       where: { id: req.params.id, userId: req.user!.id },
     });
 
-    if (!expense) return res.status(404).json({ message: 'Expense not found' });
+    if (!expense) return res.status(404).json({ message: "Expense not found" });
 
     const { amount, date, categoryId, type, description, startDate, endDate } =
       req.body;
@@ -111,7 +111,7 @@ export const updateExpense = async (req: Request, res: Response) => {
     res.json(expense);
   } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -123,19 +123,16 @@ export const deleteExpense = async (req: Request, res: Response) => {
     });
 
     if (!expense) {
-
-      return res.status(404).json({ message: 'Expense not found' })
-    };
-    if (expense.receipt) {
-     // TODO:destroy receipt
-
+      return res.status(404).json({ message: "Expense not found" });
     }
-    
+    if (expense.receipt) {
+      // TODO:destroy receipt
+    }
 
     await expense.destroy();
-    res.json({ message: 'Expense deleted successfully' }).status(204);
+    res.json({ message: "Expense deleted successfully" }).status(204);
   } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticateJWT } from "../middlewares/auth.middleware";
-<<<<<<< HEAD
+
 import {
   getBudgetAlerts,
   getCustomSummary,
@@ -11,9 +11,6 @@ import {
   monthlyQuerySchema,
   summaryQuerySchema,
 } from "../validator/summary.validator";
-=======
-import { getBudgetAlerts, getCustomSummary, getMonthlySummary } from "../controllers/summary.controller";
->>>>>>> cecfb86 ([add] finalize summary controlleur and endpoints)
 
 const router = Router();
 router.use(authenticateJWT);

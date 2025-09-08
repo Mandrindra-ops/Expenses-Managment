@@ -1,6 +1,14 @@
 import Expense from '../models/expense.model';
 import fs from "fs/promises";
 
+export interface ReceiptFile {
+  buffer: Buffer;
+  mimeType: string;
+  filename: string;
+  size: number;
+  mtime: Date;
+}
+
 export const createExpense = async (data: {
   amount: number;
   date?: string;
@@ -57,8 +65,11 @@ export const  updateExpense = async (
   if (!expense) {
     throw new Error('Expense not found or not authorized');
   }
-  
-  return await expense.update(updates);
+
+    if(updates.receipt && expense.receipt){
+        await fs.unlink(expense.receipt)
+    }
+    return await expense.update(updates);
 }
 
 // 🗑️ Delete expense (only if belongs to user)
@@ -70,9 +81,11 @@ export const deleteExpense = async (id: number, userId: number) => {
   if (expense.receipt) {
       try {
         await fs.unlink(expense.receipt);
-      } catch (unlinkError) {
-        console.error('Error deleting receipt file:', unlinkError);
+      } catch (unlinkerror) {
+        console.error('error deleting receipt file:', unlinkerror);
       }
     }
   await expense.destroy();
+
 }
+

@@ -1,10 +1,6 @@
 import { Router } from "express";
 import { authenticateJWT } from "../middlewares/auth.middleware";
-import {
-  getBudgetAlerts,
-  getCustomSummary,
-  getMonthlySummary,
-} from "../controllers/summary.controller";
+import { getBudgetAlerts, getCustomSummary, getMonthlySummary } from "../controllers/summary.controller";
 import { validateQuery } from "../utils/validator";
 import { monthlyQuerySchema, summaryQuerySchema } from "../validator/summary.validator";
 

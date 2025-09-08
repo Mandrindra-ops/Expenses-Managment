@@ -50,7 +50,7 @@ export default function LoginForm() {
         />
       </div>
 
-      <form className=" space-y-4 flex flex-col justify-between">
+      <form acti className=" space-y-4 flex flex-col justify-between">
         {!isLoginMode ? (
           <input
             type="text"

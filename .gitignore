@@ -38,7 +38,8 @@ backend/*.pid.lock
 # Uploads
 backend/uploads/
 
-
+# Else
+backend/bun.lock
 
 #FRONTEND
 frontend/node_modules

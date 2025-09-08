@@ -6,7 +6,7 @@ import {createCategorySchema,updateCategorySchema} from '../validator/categories
 import { idParamSchema } from '../validator/base.validator';
 const router = Router();
 
-router.use(authenticateJWT); // protéger toutes les routes
+router.use(authenticateJWT);
 
 router.get('/', listCategories);
 router.post('/',validateQuery(createCategorySchema), createCategory);

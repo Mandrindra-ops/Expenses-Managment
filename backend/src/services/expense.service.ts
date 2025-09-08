@@ -1,8 +1,48 @@
 import Expense from '../models/expense.model';
+import fs from "fs/promises";
 
-class ExpenseService {
-  // ➕ Create expense
-  async createExpense(data: {
+export const createExpense = async (data: {
+  amount: number;
+  date?: string;
+  description?: string;
+  type?: 'OneTime' | 'Recurring';
+  receipt?: string;
+  startDate?: string;
+  endDate?: string;
+  userId: number;
+  categoryId: number;
+  }) => {
+  return await Expense.create({
+      ...data,
+      type: data.type ?? 'OneTime', 
+  });
+}
+
+
+export const getExpenses = async (startDate: String, endDate: String, categoryId: number, type: String, userId: number) => {
+  
+    const whereClause: any = { userId };
+
+    if (startDate && endDate) {
+      whereClause.date = { $between: [startDate, endDate] };
+    }
+
+    if (categoryId) whereClause.categoryId = categoryId;
+    if (type) whereClause.type = type;
+
+    const expenses = await Expense.findAll({ where: whereClause });
+
+  return await Expense.findAll({ where: whereClause });
+}
+
+export  const getExpenseById = async (id: number, userId: number) => {
+  return await Expense.findOne({ where: { id, userId } });
+}
+
+export const  updateExpense = async (
+  id: number,
+  userId: number,
+  updates: Partial<{
     amount: number;
     date?: string;
     description?: string;
@@ -10,70 +50,29 @@ class ExpenseService {
     receipt?: string;
     startDate?: string;
     endDate?: string;
-    userId: number;
     categoryId: number;
-    }) {
-    return await Expense.create({
-        ...data,
-        type: data.type ?? 'OneTime', // 👈 défaut si non fourni
-    });
+  }>
+) => {
+  const expense = await Expense.findOne({ where: { id, userId } });
+  if (!expense) {
+    throw new Error('Expense not found or not authorized');
   }
-
-  // 📖 Get all expenses of a user (with optional filters)
-  async getExpenses(userId: number, filters: any = {}) {
-    const where: any = { userId };
-
-    if (filters.categoryId) {
-      where.categoryId = filters.categoryId;
-    }
-    if (filters.type) {
-      where.type = filters.type;
-    }
-    if (filters.startDate && filters.endDate) {
-      where.date = {
-        $between: [filters.startDate, filters.endDate],
-      };
-    }
-
-    return await Expense.findAll({ where });
-  }
-
-  // 📖 Get single expense by id (must belong to the user)
-  async getExpenseById(id: number, userId: number) {
-    return await Expense.findOne({ where: { id, userId } });
-  }
-
-  // ✏️ Update expense (only if belongs to user)
-  async updateExpense(
-    id: number,
-    userId: number,
-    updates: Partial<{
-      amount: number;
-      date?: string;
-      description?: string;
-      type?: 'OneTime' | 'Recurring';
-      receipt?: string;
-      startDate?: string;
-      endDate?: string;
-      categoryId: number;
-    }>
-  ) {
-    const expense = await Expense.findOne({ where: { id, userId } });
-    if (!expense) {
-      throw new Error('Expense not found or not authorized');
-    }
-    return await expense.update(updates);
-  }
-
-  // 🗑️ Delete expense (only if belongs to user)
-  async deleteExpense(id: number, userId: number) {
-    const expense = await Expense.findOne({ where: { id, userId } });
-    if (!expense) {
-      throw new Error('Expense not found or not authorized');
-    }
-    await expense.destroy();
-    return { message: 'Expense deleted successfully' };
-  }
+  
+  return await expense.update(updates);
 }
 
-export default new ExpenseService();
+// 🗑️ Delete expense (only if belongs to user)
+export const deleteExpense = async (id: number, userId: number) => {
+  const expense = await Expense.findOne({ where: { id, userId } });
+  if (!expense) {
+    throw new Error('Expense not found or not authorized');
+  }
+  if (expense.receipt) {
+      try {
+        await fs.unlink(expense.receipt);
+      } catch (unlinkError) {
+        console.error('Error deleting receipt file:', unlinkError);
+      }
+    }
+  await expense.destroy();
+}

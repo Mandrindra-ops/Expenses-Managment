@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import Expense from "../models/expense.model";
-import fs from "fs/promises";
+import * as expenseService from "../services/expense.service";
 
 interface CreateExpenseBody {
   amount: number;
@@ -10,9 +9,9 @@ interface CreateExpenseBody {
   description?: string;
   startDate?: string;
   endDate?: string;
+  receipt?: string;
 }
 
-// Create Expense
 export const createExpense = async (req: Request, res: Response) => {
   try {
     const {
@@ -26,18 +25,21 @@ export const createExpense = async (req: Request, res: Response) => {
     } = req.body as unknown as CreateExpenseBody;
 
     const receipt = req.file?.path;
+    const userId = req.user?.id!;
 
-    const expense = await Expense.create({
+    const data = {
       amount,
       date,
-      description,
+      categoryId,
       type,
+      userId,
+      description,
       startDate,
       endDate,
-      categoryId,
-      userId: req.user!.id,
       receipt,
-    });
+    };
+
+    const expense = await expenseService.createExpense(data);
 
     res.status(201).json(expense);
   } catch (error: any) {
@@ -46,21 +48,17 @@ export const createExpense = async (req: Request, res: Response) => {
   }
 };
 
-// Get all expenses (with optional filters)
 export const getExpenses = async (req: Request, res: Response) => {
   try {
     const { startDate, endDate, categoryId, type } = req.query;
-
-    const whereClause: any = { userId: req.user!.id };
-
-    if (startDate && endDate) {
-      whereClause.date = { $between: [startDate, endDate] };
-    }
-
-    if (categoryId) whereClause.categoryId = categoryId;
-    if (type) whereClause.type = type;
-
-    const expenses = await Expense.findAll({ where: whereClause });
+    const userId = req.user?.id;
+    const expenses = expenseService.getExpenses(
+      String(startDate),
+      String(endDate),
+      Number(categoryId),
+      String(type),
+      Number(userId)
+    );
     res.json(expenses);
   } catch (error: any) {
     console.error(error);
@@ -68,15 +66,14 @@ export const getExpenses = async (req: Request, res: Response) => {
   }
 };
 
-// Get single expense
 export const getExpenseById = async (req: Request, res: Response) => {
   try {
-    const expense = await Expense.findOne({
-      where: { id: req.params.id, userId: req.user!.id },
-    });
-
-    if (!expense) return res.status(404).json({ message: "Expense not found" });
-
+    const { id } = req.query;
+    const userId = req.user?.id;
+    const expense = await expenseService.getExpenseById(
+      Number(id),
+      Number(userId)
+    );
     res.json(expense);
   } catch (error: any) {
     console.error(error);
@@ -84,21 +81,14 @@ export const getExpenseById = async (req: Request, res: Response) => {
   }
 };
 
-// Update expense
 export const updateExpense = async (req: Request, res: Response) => {
   try {
-    const expense = await Expense.findOne({
-      where: { id: req.params.id, userId: req.user!.id },
-    });
-
-    if (!expense) return res.status(404).json({ message: "Expense not found" });
-
     const { amount, date, categoryId, type, description, startDate, endDate } =
       req.body;
+    const { id } = req.query;
+    const userId = req.user?.id;
 
-    if (req.file?.path) expense.receipt = req.file.path;
-
-    await expense.update({
+    const newData = {
       amount,
       date,
       categoryId,
@@ -106,7 +96,14 @@ export const updateExpense = async (req: Request, res: Response) => {
       description,
       startDate,
       endDate,
-    });
+    } as Partial<CreateExpenseBody>;
+    if (req.file?.path) newData.receipt = req.file.path;
+
+    const expense = await expenseService.updateExpense(
+      Number(id),
+      Number(userId),
+      newData
+    );
 
     res.json(expense);
   } catch (error: any) {
@@ -115,7 +112,6 @@ export const updateExpense = async (req: Request, res: Response) => {
   }
 };
 
-// Delete expense
 export const deleteExpense = async (req: Request, res: Response) => {
   try {
     const expense = await Expense.findOne({
@@ -129,15 +125,14 @@ export const deleteExpense = async (req: Request, res: Response) => {
       try {
         await fs.unlink(expense.receipt);
       } catch (unlinkError) {
-<<<<<<< HEAD
         console.error("Error deleting receipt file:", unlinkError);
-=======
-        console.error('Error deleting receipt file:', unlinkError);
->>>>>>> 7d23df9 ([fix] add unlink receipt on delete if)
       }
     }
 
     await expense.destroy();
+    const { id } = req.query;
+    const userId = req.user?.id;
+    expenseService.deleteExpense(Number(id), Number(userId));
     res.json({ message: "Expense deleted successfully" }).status(204);
   } catch (error: any) {
     console.error(error);

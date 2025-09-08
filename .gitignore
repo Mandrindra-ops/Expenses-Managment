@@ -1,4 +1,5 @@
 #BACKEND
+.env
 
 # Node modules
 backend/node_modules/
@@ -6,11 +7,10 @@ backend/node_modules/
 # Logs
 backend/*.log
 backend/npm-debug.log*
-backend/yarn-debug.log*
-backend/yarn-error.log*
 
 # Environment variables
 backend/.env
+backend/.env.test
 
 # TypeScript compiled files
 backend/dist/
@@ -20,12 +20,26 @@ backend/*.tsbuildinfo
 backend/.tscache/
 
 # OS files
-.DS_Store
-Thumbs.db
+backend/.DS_Store
+backend/Thumbs.db
 
 # Optional: VSCode workspace settings
-.vscode/
+backend/.vscode/
 
+# Build output
+backend/dist/
+
+# Runtime data
+backend/pids
+backend/*.pid
+backend/*.seed
+backend/*.pid.lock
+
+# Uploads
+backend/uploads/
+
+# Else
+backend/bun.lock
 
 #FRONTEND
 frontend/node_modules

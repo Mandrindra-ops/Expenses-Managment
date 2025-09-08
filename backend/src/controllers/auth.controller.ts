@@ -12,12 +12,7 @@ dotenv.config();
 
 export const signup = async (req: Request, res: Response) => {
     try {
-    const result = userValidator(req.body);
-    // Vérification des champs requis
-    if (result.status === "error") {
-      return res.status(400).json({ message: result.data.message });
-    }
-    const {email, password} = result.data;
+    const {email, password} = req.body;
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {

@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
-<<<<<<< HEAD
+import fs from "fs/promises";
 import * as expenseService from "../services/expense.service";
-=======
-import * as expenseService from '../services/expense.service';
-import { da } from "zod/v4/locales/index.cjs";
->>>>>>> c701e27 ([fix] change validator income and expense)
 
 interface CreateExpenseBody {
   amount: number;
@@ -40,17 +36,13 @@ export const createExpense = async (req: Request, res: Response) => {
       userId,
       description,
       startDate,
-<<<<<<< HEAD
       endDate,
       receipt,
     };
-=======
-      endDate,receipt}
-    res.json(data)
-    const expense = await expenseService.createExpense(data)
->>>>>>> c701e27 ([fix] change validator income and expense)
 
+    res.json(data);
     const expense = await expenseService.createExpense(data);
+
     res.status(201).json(expense);
   } catch (error: any) {
     console.error(error);
@@ -61,7 +53,6 @@ export const createExpense = async (req: Request, res: Response) => {
 export const getExpenses = async (req: Request, res: Response) => {
   try {
     const { startDate, endDate, categoryId, type } = req.query;
-<<<<<<< HEAD
     const userId = req.user?.id;
     const expenses = expenseService.getExpenses(
       String(startDate),
@@ -70,11 +61,6 @@ export const getExpenses = async (req: Request, res: Response) => {
       String(type),
       Number(userId)
     );
-=======
-    const userId = req.user?.id
-    const expenses = await expenseService.getExpenses(startDate as string | undefined, endDate  as string | undefined, categoryId  as number | undefined, type as string | undefined, Number(userId))
-    console.log(expenses)
->>>>>>> c701e27 ([fix] change validator income and expense)
     res.json(expenses);
   } catch (error: any) {
     console.error(error);
@@ -84,18 +70,12 @@ export const getExpenses = async (req: Request, res: Response) => {
 
 export const getExpenseById = async (req: Request, res: Response) => {
   try {
-<<<<<<< HEAD
-    const { id } = req.query;
+    const { id } = req.params;
     const userId = req.user?.id;
     const expense = await expenseService.getExpenseById(
       Number(id),
       Number(userId)
     );
-=======
-    const {id} = req.params
-    const userId = req.user?.id
-    const expense = await expenseService.getExpenseById(Number(id),Number(userId))
->>>>>>> c701e27 ([fix] change validator income and expense)
     res.json(expense);
   } catch (error: any) {
     console.error(error);
@@ -107,9 +87,9 @@ export const updateExpense = async (req: Request, res: Response) => {
   try {
     const { amount, date, categoryId, type, description, startDate, endDate } =
       req.body;
-    const { id } = req.query;
-    const userId = req.user?.id;
 
+    const { id } = req.params;
+    const userId = req.user?.id;
     const newData = {
       amount,
       date,
@@ -120,7 +100,6 @@ export const updateExpense = async (req: Request, res: Response) => {
       endDate,
     } as Partial<CreateExpenseBody>;
     if (req.file?.path) newData.receipt = req.file.path;
-
     const expense = await expenseService.updateExpense(
       Number(id),
       Number(userId),

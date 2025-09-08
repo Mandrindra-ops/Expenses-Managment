@@ -33,10 +33,10 @@ export default function LoginForm({ mode }: LoginFormProps) {
   return (
     <div className="relative flex w-full min-h-screen items-center justify-center bg-gradient-to-b from-green-300 to-green-200 px-4">
       <a href="/" className='absolute p-2 rounded-full top-4 left-4'>
-        <AiFillHome className="h-6 w-6 text-gray-800" />
+        <AiFillHome className="h-7 w-7 text-white" />
       </a>
 
-      <div className="w-[430px] h-[80vh] bg-white p-8 rounded-2xl shadow-lg">
+      <div className="w-[430px] bg-white p-8 rounded-2xl shadow-lg">
         <div className="flex justify-center mb-4">
           <h2 className="text-3xl font-semibold text-center text-[#008080]">
             {isLoginMode ? 'Login' : 'Sign up'}

@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
-import { createExpenseSchema, updateExpenseSchema } from "../validator/expences.validator";
+import {
+  createExpenseSchema,
+  updateExpenseSchema,
+} from "../validator/expences.validator";
 import { resourceLimits } from "node:worker_threads";
 declare module "express-serve-static-core" {
   interface Request {
@@ -18,33 +21,32 @@ export const validateBody = <T extends z.ZodTypeAny>(schema: T) => {
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: 'Invalid Data',
-          details: error.message.toString()
-          });
-        };
-
-      next(error as any);
+          error: "Invalid Data",
+          details: error.message.toString(),
+        });
       }
 
+      next(error as any);
     }
   };
+};
 
 export const validateQuery = <T extends z.ZodTypeAny>(schema: T) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = schema.safeParse(req.query);
 
-            if (!result.success) {
-      return res.status(400).json({ errors: result.error.message });
-    }
-    req.validatedQuery = result.data;
+      if (!result.success) {
+        return res.status(400).json({ errors: result.error.message });
+      }
+      req.validatedQuery = result.data;
 
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: ' Invalid request parameters ',
-          details: error.message.toString()
+          error: " Invalid request parameters ",
+          details: error.message.toString(),
         });
       }
       next(error);
@@ -56,16 +58,16 @@ export const validateParams = <T extends z.ZodTypeAny>(schema: T) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = schema.safeParse(req.params);
-         if (!result.success) {
-      return res.status(400).json({ errors: result.error.message });
-    }
-    req.params = result.data as unknown as typeof req.params;
+      if (!result.success) {
+        return res.status(400).json({ errors: result.error.message });
+      }
+      req.params = result.data as unknown as typeof req.params;
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: 'Paramètres invalides',
-          details: error.message
+          error: "Paramètres invalides",
+          details: error.message,
         });
       }
       next(error);
@@ -93,8 +95,8 @@ export const validateMultipartExpense = (isUpdate = false) => {
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-          error: 'Invalid Data',
-          details: error.message
+          error: "Invalid Data",
+          details: error.message,
         });
       }
       next(error);

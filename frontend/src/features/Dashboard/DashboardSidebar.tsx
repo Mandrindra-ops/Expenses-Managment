@@ -11,13 +11,13 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
     const location = useLocation();
     
     const navigationItems = [
-        { name: 'Dashboard', icon: ChartNoAxesCombined, href: '/' },
-        { name: 'Expenses', icon: CircleDollarSign, href: '/expenses' },
-        { name: 'Incomes', icon: BanknoteArrowUp, href: '/incomes' },
+        { name: 'Dashboard', icon: ChartNoAxesCombined, href: '/dashboard' },
+        { name: 'Expenses', icon: CircleDollarSign, href: '/dashboard/expenses' },
+        { name: 'Incomes', icon: BanknoteArrowUp, href: '/dashboard/incomes' },
     ];
 
     const bottomNavigationItems = [
-        { name: 'Profil', icon: UserRound , href: '/profile' },
+        { name: 'Profil', icon: UserRound , href: '/dashboard/profile' },
         { name: 'Sign Out', icon: LogOut , href: '/logout' },
     ];
 

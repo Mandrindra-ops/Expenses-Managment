@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route';
 import categoryRoutes from './routes/category.route';
 import expenseRoutes from './routes/expense.route'
+import incomeRoutes from './routes/income.route'
 import sequelize from './utils/database';
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/incomes', incomeRoutes);
 
 // Vérification de la connexion DB
 sequelize.authenticate()

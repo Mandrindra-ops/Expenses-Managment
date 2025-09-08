@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import DashboardSidebar from './DashboardSidebar';
-import DashboardHeader from './DashboardHeader';
+import DashboardSidebar from '../features/Dashboard/DashboardSidebar';
+import DashboardHeader from '../features/Dashboard/DashboardHeader';
 
 const Dashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

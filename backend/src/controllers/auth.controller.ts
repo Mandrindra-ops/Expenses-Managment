@@ -12,10 +12,6 @@ dotenv.config();
 
 dotenv.config();
 
-/**
- * Signup - créer un nouvel utilisateur
- */
-
 export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -38,9 +34,6 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * Login - authentifier un utilisateur
- */
 export const login = async (req: Request, res: Response) => {
   try {
     const result = userValidator(req.body);
@@ -67,14 +60,16 @@ export const login = async (req: Request, res: Response) => {
 
     res.json({ token });
   } catch (error: any) {
+    if (error instanceof UserNotFoundError) {
+      return res.status(404).json({ message: error.message });
+    } else if (error instanceof InvalidCredentialError) {
+      return res.status(404).json({ message: error.message });
+    }
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-/**
- * Me - renvoyer les informations de l'utilisateur connecté
- */
 export const me = async (req: Request, res: Response) => {
   try {
     const user = req.user;

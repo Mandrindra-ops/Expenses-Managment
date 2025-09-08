@@ -5,13 +5,17 @@ import DashboardContent from './pages/Dashboard/DashboardContent';
 import Profil from './pages/Profil/Profil';
 import Expense from './pages/Expense/Expense';
 import Income from './pages/Income/Income';
+import HomePage from './pages/HomePage';
+import LoginForm from './components/forms/LoginForm';
 
 const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Dashboard />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardContent />} />
             <Route path="profile" element={<Profil />} />
             <Route path="expenses" element={<Expense />} />

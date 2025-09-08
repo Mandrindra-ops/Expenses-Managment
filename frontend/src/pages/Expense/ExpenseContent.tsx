@@ -1,3 +1,4 @@
+import { ReceiptText } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface Expense {
@@ -169,9 +170,9 @@ const ExpenseContent: React.FC = () => {
                     {expense.receipt && (
                         <button
                         onClick={() => handleDownloadReceipt(expense.id)}
-                        className="px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
+                        className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
                         >
-                        📄 Reçu
+                        <ReceiptText />  Reçu
                         </button>
                     )}
                     </td>

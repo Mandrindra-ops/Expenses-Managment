@@ -1,3 +1,4 @@
+import { BanknoteArrowUp, ChartNoAxesCombined, CircleDollarSign, LogOut, UserRound } from 'lucide-react';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -10,14 +11,14 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
     const location = useLocation();
     
     const navigationItems = [
-        { name: 'Dashboard', icon: '📊', href: '/' },
-        { name: 'Expenses', icon: '💰', href: '/expenses' },
-        { name: 'Incomes', icon: '💵', href: '/incomes' },
+        { name: 'Dashboard', icon: ChartNoAxesCombined, href: '/' },
+        { name: 'Expenses', icon: CircleDollarSign, href: '/expenses' },
+        { name: 'Incomes', icon: BanknoteArrowUp, href: '/incomes' },
     ];
 
     const bottomNavigationItems = [
-        { name: 'Profil', icon: '👤', href: '/profile' },
-        { name: 'Sign Out', icon: '🚪', href: '/logout' },
+        { name: 'Profil', icon: UserRound , href: '/profile' },
+        { name: 'Sign Out', icon: LogOut , href: '/logout' },
     ];
 
     return (
@@ -53,7 +54,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
                                     : 'text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white'
                             }`}
                         >
-                            <span className="mr-3 text-xl">{item.icon}</span>
+                            <span className="mr-3 text-xl">{<item.icon />}</span>
                             {item.name}
                         </Link>
                     ))}
@@ -73,7 +74,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
                                     : 'text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-white'
                             }`}
                         >
-                            <span className="mr-3 text-xl">{item.icon}</span>
+                            <span className="mr-3 text-xl">{<item.icon />}</span>
                             {item.name}
                         </Link>
                     ))}

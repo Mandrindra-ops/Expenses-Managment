@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
 import { createExpenseSchema, updateExpenseSchema } from "../validator/expences.validator";
+import { resourceLimits } from "node:worker_threads";
 declare module "express-serve-static-core" {
   interface Request {
     validatedBody?: any;
@@ -79,6 +80,9 @@ export const validateMultipartExpense = (isUpdate = false) => {
       // Convertir les champs numériques des string vers number
       if (req.body.amount) {
         req.body.amount = parseFloat(req.body.amount);
+      }
+      if (req.body.categoryId) {
+        req.body.categoryId = parseFloat(req.body.categoryId);
       }
 
       // Appliquer le schéma approprié

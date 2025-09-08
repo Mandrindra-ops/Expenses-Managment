@@ -1,9 +1,11 @@
 import z from "zod";
 
 export const idParamSchema = z.object({
-  id: z.number().or(z.string().regex(/^\d+$/, "id doit être un entier")
-    .transform((val) => Number(val)) )
-})
+  id:  z.preprocess(val => {
+    if (typeof val === "string") return parseInt(val, 10);
+    console.log(val)
+        return val;
+  }, z.number())})
 export const emailSchema = z.string().email();
 export const passwordSchema = z.string()
   .min(6, "Password must be at least 6 characters long")

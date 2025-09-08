@@ -5,7 +5,7 @@ import { Request } from 'express';
 // Définir le stockage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // dossier où stocker
+    cb(null, path.resolve(__dirname,"../uploads")); // dossier où stocker
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

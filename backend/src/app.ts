@@ -8,6 +8,7 @@ import incomeRoutes from "./routes/income.route";
 import sequelize from "./utils/database";
 import summaryRoutes from "./routes/summary.route";
 import userRoutes from './routes/user.route'
+import receiptRoutes from './routes/receipt.route'
 
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/incomes", incomeRoutes);
 app.use("/api/summary", summaryRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/receipts', receiptRoutes);
 
 // Vérification de la connexion DB
 sequelize

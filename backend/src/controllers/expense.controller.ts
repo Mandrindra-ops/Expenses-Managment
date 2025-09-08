@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import * as expenseService from '../services/expense.service';
-import { da } from "zod/v4/locales/index.cjs";
 
 interface CreateExpenseBody {
   amount: number;
@@ -36,8 +35,7 @@ export const createExpense = async (req: Request, res: Response) => {
       description,
       startDate,
       endDate,receipt}
-    res.json(data)
-    const expense = await expenseService.createExpense(data)
+        const expense = await expenseService.createExpense(data)
 
     res.status(201).json(expense);
   } catch (error: any) {
@@ -75,12 +73,10 @@ export const getExpenseById = async (req: Request, res: Response) => {
 
 export const updateExpense = async (req: Request, res: Response) => {
   try {
-  
     const { amount, date, categoryId, type, description, startDate, endDate } =
       req.body;
-    const { id } = req.query
+    const { id } = req.params
     const userId = req.user?.id
-      
       const newData = {
         amount,
         date,
@@ -91,7 +87,6 @@ export const updateExpense = async (req: Request, res: Response) => {
         endDate,
       } as Partial<CreateExpenseBody>
       if (req.file?.path) newData.receipt = req.file.path;
-
       const expense = await expenseService.updateExpense(Number(id) ,Number(userId) ,newData)
 
     res.json(expense);

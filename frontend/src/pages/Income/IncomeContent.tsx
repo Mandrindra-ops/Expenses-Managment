@@ -1,3 +1,4 @@
+import { BanknoteArrowDown, ChartNoAxesCombined, RefreshCcw, Zap } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface Income {
@@ -63,7 +64,7 @@ const IncomeContent: React.FC = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-[var(--color-income)] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">💰</span>
+                <span className="text-white text-sm"><BanknoteArrowDown /></span>
               </div>
             </div>
             <div className="ml-3">
@@ -77,7 +78,7 @@ const IncomeContent: React.FC = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">📈</span>
+                <span className="text-white text-sm"><ChartNoAxesCombined /></span>
               </div>
             </div>
             <div className="ml-3">
@@ -91,7 +92,7 @@ const IncomeContent: React.FC = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <div className="w-8 h-8 bg-[var(--color-secondary)] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm">🔄</span>
+                <span className="text-white text-sm"><RefreshCcw /></span>
               </div>
             </div>
             <div className="ml-3">
@@ -191,12 +192,12 @@ const IncomeContent: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {income.recurring ? (
-                      <span className="px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
-                        🔄 {income.frequency}
+                      <span className="flex items-center gap-2 px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
+                        <RefreshCcw /> {income.frequency}
                       </span>
                     ) : (
-                      <span className="px-2 py-1 text-xs font-medium bg-[var(--color-secondary)] text-white rounded-full">
-                        ⚡ Ponctuel
+                      <span className="flex items-center gap-2 px-2 py-1 text-xs font-medium bg-[var(--color-secondary)] text-white rounded-full">
+                        <Zap /> Ponctuel
                       </span>
                     )}
                   </td>

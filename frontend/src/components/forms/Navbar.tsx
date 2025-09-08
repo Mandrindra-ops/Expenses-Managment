@@ -11,14 +11,14 @@ const Navbar: React.FC<NavbarProps> = () => {
       </div>
       <div className="flex gap-3">
         <Link
-          to="/login?mode=login"
+          to="/login"
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline focus:outline-blue-600 focus:outline-offset-2 text-base"
           aria-label="Navigate to login page"
         >
           Login
         </Link>
         <Link
-          to="/login?mode=signup"
+          to="/signup"
           className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline focus:outline-green-600 focus:outline-offset-2 text-base"
           aria-label="Navigate to sign up page"
         >

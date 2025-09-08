@@ -21,18 +21,9 @@ export const validateBody = <T extends z.ZodTypeAny>(schema: T) => {
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-<<<<<<< HEAD
           error: "Invalid Data",
           details: error.message.toString(),
         });
-=======
-          error: 'Invalid Data',
-          details: error.message.toString()
-          });
-        };
-
-      next(error as any);
->>>>>>> 86765c6 ([fix] change validator on income)
       }
 
       next(error as any);
@@ -45,29 +36,17 @@ export const validateQuery = <T extends z.ZodTypeAny>(schema: T) => {
     try {
       const result = schema.safeParse(req.query);
 
-<<<<<<< HEAD
       if (!result.success) {
         return res.status(400).json({ errors: result.error.message });
       }
       req.validatedQuery = result.data;
-=======
-            if (!result.success) {
-      return res.status(400).json({ errors: result.error.message });
-    }
-    req.query = result.data as unknown as typeof req.query;
->>>>>>> 86765c6 ([fix] change validator on income)
 
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
-<<<<<<< HEAD
           error: " Invalid request parameters ",
           details: error.message.toString(),
-=======
-          error: ' Invalid request parameters ',
-          details: error.message.toString()
->>>>>>> 86765c6 ([fix] change validator on income)
         });
       }
       next(error);

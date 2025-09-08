@@ -14,7 +14,8 @@ const App: React.FC = () => {
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/login" element={<LoginForm mode="login" />} />
+          <Route path="/signup" element={<LoginForm mode="signup" />} />
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardContent />} />
             <Route path="profile" element={<Profil />} />
@@ -47,9 +48,6 @@ export default App;
 
 
 // Routes recommandées
-// <Route path="/" element={<Landing />} />
-// <Route path="/login" element={<Login />} />
-// <Route path="/signup" element={<Signup />} />
 
 // <Route path="/dashboard" element={<Dashboard />} />
 // <Route path="/expenses" element={<ExpensesList />} />

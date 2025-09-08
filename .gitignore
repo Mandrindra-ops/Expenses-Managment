@@ -1,0 +1,67 @@
+#BACKEND
+.env
+
+# Node modules
+backend/node_modules/
+
+# Logs
+backend/*.log
+backend/npm-debug.log*
+
+# Environment variables
+backend/.env
+backend/.env.test
+
+# TypeScript compiled files
+backend/dist/
+backend/*.tsbuildinfo
+
+# Nodemon / ts-node temp files
+backend/.tscache/
+
+# OS files
+backend/.DS_Store
+backend/Thumbs.db
+
+# Optional: VSCode workspace settings
+backend/.vscode/
+
+# Build output
+backend/dist/
+
+# Runtime data
+backend/pids
+backend/*.pid
+backend/*.seed
+backend/*.pid.lock
+
+# Uploads
+backend/uploads/
+
+
+
+#FRONTEND
+frontend/node_modules
+
+frontend/logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+frontend/.vscode/*
+!frontend/.vscode/extensions.json
+frontend/.idea
+frontend/.DS_Store
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?

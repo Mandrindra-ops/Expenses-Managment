@@ -1,0 +1,34 @@
+@import "tailwindcss";
+/* Light Mode par défaut */
+:root {
+  --color-bg: #F9FAFB;
+  --color-bg-card: #F3F4F6;
+  --color-text: #111827;
+  --color-text-sub: #4B5563;
+
+  --color-primary: #10B981;
+  --color-primary-teal: #008080;
+  --color-secondary: #2563EB;
+  --color-secondary-light: #3B82F6;
+
+  --color-expense: #EF4444;
+  --color-income: #22C55E;
+  --color-alert: #F59E0B;
+}
+
+/* Dark Mode */
+.dark {
+  --color-bg: #111827;
+  --color-bg-card: #1F2937;
+  --color-text: #F9FAFB;
+  --color-text-sub: #D1D5DB;
+
+  --color-primary: #10B981;
+  --color-primary-teal: #008080;
+  --color-secondary: #2563EB;
+  --color-secondary-light: #3B82F6;
+
+  --color-expense: #EF4444;
+  --color-income: #22C55E;
+  --color-alert: #F59E0B;
+}

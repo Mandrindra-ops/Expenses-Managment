@@ -19,7 +19,7 @@ export const createExpense = async (data: {
 }
 
 
-export const getExpenses = async (startDate: String, endDate: String, categoryId: number, type: String, userId: number) => {
+export const getExpenses = async (startDate: String | undefined, endDate: String | undefined , categoryId: number | undefined , type: String | undefined , userId: number| undefined ) => {
   
     const whereClause: any = { userId };
 
@@ -31,8 +31,8 @@ export const getExpenses = async (startDate: String, endDate: String, categoryId
     if (type) whereClause.type = type;
 
     const expenses = await Expense.findAll({ where: whereClause });
-
-  return await Expense.findAll({ where: whereClause });
+    console.error(expenses)
+    return expenses
 }
 
 export  const getExpenseById = async (id: number, userId: number) => {

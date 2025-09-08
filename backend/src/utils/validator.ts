@@ -1,7 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
 import { createExpenseSchema, updateExpenseSchema } from "../validator/expences.validator";
-
+declare module "express-serve-static-core" {
+  interface Request {
+    validatedBody?: any;
+    validatedQuery?: any;
+    validatedParams?: any;
+  }
+}
 export const validateBody = <T extends z.ZodTypeAny>(schema: T) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -30,7 +36,7 @@ export const validateQuery = <T extends z.ZodTypeAny>(schema: T) => {
             if (!result.success) {
       return res.status(400).json({ errors: result.error.message });
     }
-    req.query = result.data as unknown as typeof req.query;
+    req.validatedQuery = result.data;
 
       next();
     } catch (error) {

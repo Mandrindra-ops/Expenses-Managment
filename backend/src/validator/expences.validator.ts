@@ -6,12 +6,12 @@ export const createExpenseSchema = z.object({
   date: dateSchema,
   categoryId: z.number(),
   description: z.string().optional(),
-  type: z.enum(['one-time', 'recurring']).default('one-time'),
+  type: z.enum(['OneTime', 'Recurring']).default('OneTime'),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   receipt: z.any().optional() 
 }).refine((data) => {
-  if (data.type === 'recurring') {
+  if (data.type === 'Recurring') {
     return data.startDate && data.endDate;
   }
   return true;
@@ -24,7 +24,7 @@ export const updateExpenseSchema = z.object({
   date: dateSchema.optional(),
   categoryId: z.number().optional(),
   description: z.string().optional(),
-  type: z.enum(['one-time', 'recurring']).optional(),
+  type: z.enum(['OneTime', 'Recurring']).optional(),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   receipt: z.any().optional()
@@ -34,7 +34,7 @@ export const expenseQuerySchema = z.object({
   start: dateSchema.optional(),
   end: dateSchema.optional(),
   category: z.string().optional(),
-  type: z.enum(['recurring', 'one-time']).optional()
+  type: z.enum(['Recurring', 'OneTime']).optional()
 });
 
 

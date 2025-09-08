@@ -17,7 +17,7 @@ export const createIncome = async (req: Request, res: Response) => {
 
 export const getIncomes = async (req: Request, res: Response) => {
   try {
-    const { start, end } = req.query;
+    const { start, end } = req.validatedQuery;
     const user = req.user;
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
@@ -31,9 +31,10 @@ export const getIncomes = async (req: Request, res: Response) => {
 export const getIncome = async (req: Request, res: Response) => {
   try {
     const user = req.user;
+    const { id } = req.params
     if (!user) return res.status(401).json({ message: "Unauthorized" });
-
-    const income = await getIncomeService(Number(req.params.id), user.id);
+    console.log(id)
+    const income = await getIncomeService(parseInt(id,10), user.id);
     if (!income) return res.status(404).json({ error: "Income not found" });
 
     res.json(income);

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as expenseService from '../services/expense.service';
+import { da } from "zod/v4/locales/index.cjs";
 
 interface CreateExpenseBody {
   amount: number;
@@ -35,7 +36,7 @@ export const createExpense = async (req: Request, res: Response) => {
       description,
       startDate,
       endDate,receipt}
-
+    res.json(data)
     const expense = await expenseService.createExpense(data)
 
     res.status(201).json(expense);
@@ -50,7 +51,8 @@ export const getExpenses = async (req: Request, res: Response) => {
   try {
     const { startDate, endDate, categoryId, type } = req.query;
     const userId = req.user?.id
-    const expenses = expenseService.getExpenses(String(startDate), String(endDate), Number(categoryId), String(type), Number(userId))
+    const expenses = await expenseService.getExpenses(startDate as string | undefined, endDate  as string | undefined, categoryId  as number | undefined, type as string | undefined, Number(userId))
+    console.log(expenses)
     res.json(expenses);
   } catch (error: any) {
     console.error(error);
@@ -61,7 +63,7 @@ export const getExpenses = async (req: Request, res: Response) => {
 
 export const getExpenseById = async (req: Request, res: Response) => {
   try {
-    const {id} = req.query
+    const {id} = req.params
     const userId = req.user?.id
     const expense = await expenseService.getExpenseById(Number(id),Number(userId))
     res.json(expense);

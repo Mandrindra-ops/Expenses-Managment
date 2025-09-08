@@ -10,8 +10,8 @@ const router = Router();
 router.use(authenticateJWT)
 // Protéger la route et accepter un seul fichier nommé "receipt"
 
-router.get('/', validateQuery(expenseQuerySchema), getExpenses);
-router.get('/:id', validateQuery(idParamSchema), getExpenseById);
+router.get('/', getExpenses);
+router.get('/:id', getExpenseById);
 router.post('/', upload.single('receipt'),validateMultipartExpense(false), createExpense);
 router.put('/:id', validateQuery(idParamSchema), updateExpense)
 router.delete('/:id', validateQuery(idParamSchema), deleteExpense)

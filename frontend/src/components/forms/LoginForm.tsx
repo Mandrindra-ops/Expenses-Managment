@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function LoginForm() {
   const [searchParams, setSearchParams] = useSearchParams();
   const mode = searchParams.get('mode');
   const [isLoginMode, setIsLoginMode] = useState(mode !== 'signup');
-
+  const navigate = useNavigate();
   useEffect(() => {
     setIsLoginMode(mode !== 'signup');
   }, [mode]);
@@ -13,6 +13,15 @@ export default function LoginForm() {
   const toggleMode = (newMode: boolean) => {
     setIsLoginMode(newMode);
     setSearchParams({ mode: newMode ? 'login' : 'signup' });
+  };
+  const handleSubmit = (data: FormData) => {
+    const email = data.get('email');
+    const password = data.get('password');
+    console.log('Email:', email);
+    console.log('Password:', password);
+   if (email === "admin@gmail.com" && password === "1234") {
+    return navigate("/dashboard");
+  }
   };
 
   return (
@@ -50,7 +59,7 @@ export default function LoginForm() {
         />
       </div>
 
-      <form className=" space-y-4 flex flex-col justify-between">
+      <form action={handleSubmit} className=" space-y-4 flex flex-col justify-between">
         {!isLoginMode ? (
           <input
             type="text"

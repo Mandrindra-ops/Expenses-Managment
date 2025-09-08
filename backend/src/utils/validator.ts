@@ -12,7 +12,7 @@ export const validateBody = <T extends z.ZodTypeAny>(schema: T) => {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
           error: 'Invalid Data',
-          details: error.message
+          details: error.message.toString()
           });
         };
 
@@ -26,7 +26,8 @@ export const validateQuery = <T extends z.ZodTypeAny>(schema: T) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = schema.safeParse(req.query);
-    if (!result.success) {
+
+            if (!result.success) {
       return res.status(400).json({ errors: result.error.message });
     }
     req.query = result.data as unknown as typeof req.query;
@@ -36,7 +37,7 @@ export const validateQuery = <T extends z.ZodTypeAny>(schema: T) => {
       if (error instanceof z.ZodError) {
         return res.status(400).json({
           error: ' Invalid request parameters ',
-          details: error.message
+          details: error.message.toString()
         });
       }
       next(error);

@@ -1,9 +1,5 @@
 import { Request, Response } from "express";
-<<<<<<< HEAD
 import * as expenseService from "../services/expense.service";
-=======
-import * as expenseService from '../services/expense.service';
->>>>>>> bfde2e8 ([fix] fix receipt uploads with secure replace and TS type fixes)
 
 interface CreateExpenseBody {
   amount: number;
@@ -39,17 +35,11 @@ export const createExpense = async (req: Request, res: Response) => {
       userId,
       description,
       startDate,
-<<<<<<< HEAD
       endDate,
       receipt,
     };
 
     const expense = await expenseService.createExpense(data);
-=======
-      endDate,receipt}
-        const expense = await expenseService.createExpense(data)
->>>>>>> bfde2e8 ([fix] fix receipt uploads with secure replace and TS type fixes)
-
     res.status(201).json(expense);
   } catch (error: any) {
     console.error(error);
@@ -94,7 +84,6 @@ export const updateExpense = async (req: Request, res: Response) => {
   try {
     const { amount, date, categoryId, type, description, startDate, endDate } =
       req.body;
-<<<<<<< HEAD
     const { id } = req.query;
     const userId = req.user?.id;
 
@@ -114,21 +103,6 @@ export const updateExpense = async (req: Request, res: Response) => {
       Number(userId),
       newData
     );
-=======
-    const { id } = req.params
-    const userId = req.user?.id
-      const newData = {
-        amount,
-        date,
-        categoryId,
-        type,
-        description,
-        startDate,
-        endDate,
-      } as Partial<CreateExpenseBody>
-      if (req.file?.path) newData.receipt = req.file.path;
-      const expense = await expenseService.updateExpense(Number(id) ,Number(userId) ,newData)
->>>>>>> bfde2e8 ([fix] fix receipt uploads with secure replace and TS type fixes)
 
     res.json(expense);
   } catch (error: any) {

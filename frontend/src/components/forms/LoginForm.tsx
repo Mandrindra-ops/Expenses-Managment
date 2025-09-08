@@ -1,3 +1,4 @@
+import { AiFillHome } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,8 +32,8 @@ export default function LoginForm({ mode }: LoginFormProps) {
 
   return (
     <div className="relative flex w-full min-h-screen items-center justify-center bg-gradient-to-b from-green-300 to-green-200 px-4">
-      <a href="/" className='absolute p-2 bg-white rounded-full shadow-lg top-4 left-4'>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      <a href="/" className='absolute p-2 rounded-full top-4 left-4'>
+        <AiFillHome className="h-6 w-6 text-gray-800" />
       </a>
 
       <div className="w-[430px] h-[80vh] bg-white p-8 rounded-2xl shadow-lg">

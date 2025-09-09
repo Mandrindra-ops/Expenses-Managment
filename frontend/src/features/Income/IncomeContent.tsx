@@ -13,8 +13,6 @@ interface Income {
 
 const IncomeContent: React.FC = () => {
   const [showAddIncome, setShowAddIncome] = useState(false);
-    const [showAddCategory, setShowAddCategory] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   
   const categories = ['Salaire', 'Freelance', 'Investissements', 'Location', 'Cadeaux', 'Autre'];

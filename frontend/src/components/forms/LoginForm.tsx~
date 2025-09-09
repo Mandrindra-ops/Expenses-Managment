@@ -1,8 +1,7 @@
 import { AiFillHome } from 'react-icons/ai';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, type SubmitHandler } from "react-hook-form"
-import { useAuth } from '../../hooks/useAuth';
 
 
 interface LoginFormProps {
@@ -17,44 +16,18 @@ export default function LoginForm({ mode }: LoginFormProps) {
     const [isLoginMode, setIsLoginMode] = useState(isLoginModeInitial);
     const { handleSubmit, register, formState: { errors } } = useForm<AccountForm>()
     const navigate = useNavigate();
-    const { login, signup } = useAuth()
+    // const { login } = useAuth()
 
-    // useEffect(() => {
-    //     setIsLoginMode(mode === 'login');
-    // }, [mode]);
+    useEffect(() => {
+        setIsLoginMode(mode === 'login');
+    }, [mode]);
 
     const toggleMode = (newMode: boolean) => {
-        if (newMode) {
-            setIsLoginMode(true)
-            navigate('/login')
-        } else {
-            setIsLoginMode(false)
-            navigate('/signup')
-        };
+        if (newMode) navigate('/login');
+        else navigate('/signup');
     };
 
-    const onSubmit: SubmitHandler<AccountForm> = (data) => {
-        const { email, password } = data
-
-        if (isLoginMode) {
-            try {
-                login(email, password);
-            } catch (err) {
-                if (err instanceof Error)
-                    console.log({ message: err.message })
-            }
-            return navigate('/dashboard')
-        } else {
-            try {
-                signup(email, password);
-            } catch (err) {
-
-                if (err instanceof Error)
-                    console.log({ message: err.message })
-            }
-            return navigate("/login")
-        }
-    }
+    const onSubmit: SubmitHandler<AccountForm> = (data) => { console.log(data) }
 
 
     return (
@@ -102,7 +75,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
 
                     />
 
-                    {errors.email && <p className='text-red-500 font-semibold text-md'>{errors.email.message}</p>}
+                    {errors.email && <p className='text-red-500 font-semibold text-md'>{errors.password.message}</p>}
                     <input
                         type="password"
                         {...register("password", { required: true, minLength: 6, pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, message: "mot de passe trop faible" } })}

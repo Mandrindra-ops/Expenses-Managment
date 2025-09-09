@@ -13,7 +13,6 @@ interface Income {
 
 const IncomeContent: React.FC = () => {
   const [showAddIncome, setShowAddIncome] = useState(false);
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   
   const categories = ['Salaire', 'Freelance', 'Investissements', 'Location', 'Cadeaux', 'Autre'];
   const frequencyOptions = ['Mensuel', 'Trimestriel', 'Annuel', 'Ponctuel'];
@@ -27,9 +26,8 @@ const IncomeContent: React.FC = () => {
   ];
 
   const filteredIncomes = incomes.filter(income => {
-    const matchesCategory = selectedCategory === 'all' || income.category === selectedCategory;
-    const matchesDateRange = (!dateRange.start || income.date >= dateRange.start) && 
-                            (!dateRange.end || income.date <= dateRange.end);
+    const matchesCategory = 'all';
+    const matchesDateRange = '';
     return matchesCategory && matchesDateRange;
   });
 
@@ -39,10 +37,6 @@ const IncomeContent: React.FC = () => {
   const handleAddIncome = (incomeData: any) => {
     console.log('Nouveau revenu:', incomeData);
     setShowAddIncome(false);
-  };
-   const handleAddCategory = (categoryName: string) => {
-    console.log('Nouvelle catégorie:', categoryName);
-    setShowAddCategory(false);
   };
 
   return (
@@ -108,62 +102,6 @@ const IncomeContent: React.FC = () => {
         </div>
       </div>
 
-      {/* Filtres */}
-      <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Filtre par catégorie */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-              Catégorie
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
-            >
-              <option value="all">Toutes les catégories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtre par date de début */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-              Date de début
-            </label>
-            <input
-              type="date"
-              value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-
-          {/* Filtre par date de fin */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-              Date de fin
-            </label>
-            <input
-              type="date"
-              value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-          <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setShowAddCategory(true)}
-            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition"
-          >
-            + Nouvelle Catégorie
-          </button>
-        </div>
-        </div>
-      </div>
-
       {/* Liste des revenus */}
       <div className="bg-[var(--color-bg-card)] rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
@@ -172,9 +110,6 @@ const IncomeContent: React.FC = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
                   Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
-                  Catégorie
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
                   Date
@@ -309,23 +244,6 @@ const IncomeContent: React.FC = () => {
               >
                 Ajouter
               </button>
-            </div>
-          </div>
-        </div>
-        
-      )}
-      {/* Modal pour ajouter une catégorie */}
-      {showAddCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Catégorie</h2>
-            <div>
-              <label className="block text-sm text-[var(--color-text-sub)] mb-1">Nom de la catégorie</label>
-              <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Abonnements" />
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 bg-gray-300 rounded-lg">Annuler</button>
-              <button onClick={() => handleAddCategory('Nouvelle catégorie')} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg">Créer</button>
             </div>
           </div>
         </div>

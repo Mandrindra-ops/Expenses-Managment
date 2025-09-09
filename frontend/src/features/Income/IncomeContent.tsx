@@ -13,6 +13,7 @@ interface Income {
 
 const IncomeContent: React.FC = () => {
   const [showAddIncome, setShowAddIncome] = useState(false);
+    const [showAddCategory, setShowAddCategory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   
@@ -40,6 +41,10 @@ const IncomeContent: React.FC = () => {
   const handleAddIncome = (incomeData: any) => {
     console.log('Nouveau revenu:', incomeData);
     setShowAddIncome(false);
+  };
+   const handleAddCategory = (categoryName: string) => {
+    console.log('Nouvelle catégorie:', categoryName);
+    setShowAddCategory(false);
   };
 
   return (
@@ -150,6 +155,14 @@ const IncomeContent: React.FC = () => {
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
             />
           </div>
+          <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => setShowAddCategory(true)}
+            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition"
+          >
+            + Nouvelle Catégorie
+          </button>
+        </div>
         </div>
       </div>
 
@@ -301,8 +314,27 @@ const IncomeContent: React.FC = () => {
             </div>
           </div>
         </div>
+        
       )}
+      {/* Modal pour ajouter une catégorie */}
+      {showAddCategory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Catégorie</h2>
+            <div>
+              <label className="block text-sm text-[var(--color-text-sub)] mb-1">Nom de la catégorie</label>
+              <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Abonnements" />
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 bg-gray-300 rounded-lg">Annuler</button>
+              <button onClick={() => handleAddCategory('Nouvelle catégorie')} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg">Créer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
+
   );
 };
 

@@ -57,8 +57,51 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
     setMode("list")
   };
 
- const totalAmount = incomes.reduce((sum, income) => sum + income.amount, 0);
- const monthlyAverage = incomes.length > 0 ? totalAmount / incomes.length : 0;
+  const totalAmount = incomes.reduce((sum, income) => sum + income.amount, 0);
+  const monthlyAverage = incomes.length > 0 ? totalAmount / incomes.length : 0;
+
+  const [formData, setFormData] = useState({
+    description: "",
+    source: "",
+    amount: "",
+    date: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await api.post<Income>("/incomes", {
+        description: formData.description,
+        source: formData.source,
+        amount: parseFloat(formData.amount),
+        date: formData.date,
+      });
+
+      // Ajouter le nouvel income directement dans la liste
+      setIncomes((prev) => [...prev, res.data]);
+
+      // Reset formulaire
+      setFormData({ description: "", source: "", amount: "", date: "" });
+
+      // Revenir en mode liste
+      handleCancelForm();
+    } catch (err: any) {
+      if (err.response) {
+        console.error("Backend error:", err.response.data);
+        console.error("Status:", err.response.status);
+      } else {
+        console.error("Erreur inconnue:", err.message);
+      }
+    }
+
+};
 
 
   return (
@@ -91,7 +134,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-[var(--color-text-sub)]">Total Revenus</p>
-                  <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2)} €</p>
+                  <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2)} Ar</p>
                 </div>
               </div>
             </div>
@@ -102,7 +145,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-[var(--color-text-sub)]">Moyenne Mensuelle</p>
-                  <p className="text-xl font-bold text-[var(--color-text)]">{monthlyAverage.toFixed(2)} €</p>
+                  <p className="text-xl font-bold text-[var(--color-text)]">{monthlyAverage.toFixed(2)} Ar</p>
                 </div>
               </div>
             </div>
@@ -127,7 +170,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                     <td>{income.description}</td>
                     <td>{income.source}</td>
                     <td>{new Date(income.date).toLocaleDateString("fr-FR")}</td>
-                    <td>{income.amount} €</td>
+                    <td>{income.amount} Ar</td>
                   </tr>
                 ))}
               </tbody>
@@ -138,49 +181,60 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
         /* FORM CREATE */
         <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6">
           <h2 className="text-xl font-bold mb-4">Ajouter un revenu</h2>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  placeholder="Ex: Salaire octobre"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Source
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  placeholder="Ex: Salaire"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Montant (€)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  placeholder="0.00"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-            
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Description
+              </label>
+              <input
+                type="text"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Ex: Salaire octobre"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Source
+              </label>
+              <input
+                type="text"
+                name="source"
+                value={formData.source}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Ex: Salaire"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Montant (Ar)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="0.00"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
             <div className="flex justify-end gap-2">
               <button 
                 type="button" 
@@ -189,7 +243,12 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
               >
                 Annuler
               </button>
-              <button type="submit" className="px-4 py-2 bg-[var(--color-income)] text-white rounded">Enregistrer</button>
+              <button 
+                type="submit" 
+                className="px-4 py-2 bg-[var(--color-income)] text-white rounded"
+              >
+                Enregistrer
+              </button>
             </div>
           </form>
         </div>

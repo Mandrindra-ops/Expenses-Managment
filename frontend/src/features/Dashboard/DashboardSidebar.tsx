@@ -87,7 +87,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
                     {/* Bouton Log Out qui ouvre la modal */}
                     <button
                         onClick={() => setShowLogoutConfirm(true)}
-                        className="flex items-center w-full px-4 py-2 rounded-lg font-bold transition-colors text-[var(--color-expense)] hover:bg-[var(--color-expense)] hover:text-white"
+                        className="flex items-center w-full px-4 py-2 rounded-lg font-bold transition-colors text-[var(--color-expense)] hover:bg-[var(--color-expense)] hover:text-white cursor-pointer"
                     >
                         <span className="mr-3 text-xl"><LogOut /></span>
                         Log Out
@@ -105,13 +105,13 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
                     <div className="flex justify-between">
                         <button
                             onClick={() => setShowLogoutConfirm(false)}
-                            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 cursor-pointer"
                         >
                             Annuler
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                            className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 cursor-pointer"
                         >
                             Confirmer
                         </button>

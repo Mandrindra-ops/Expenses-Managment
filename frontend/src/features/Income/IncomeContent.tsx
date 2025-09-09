@@ -57,7 +57,7 @@ const IncomeContent: React.FC = () => {
         </div>
         <button
           onClick={() => setShowAddIncome(true)}
-          className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg hover:brightness-90 transition mt-4 md:mt-0"
+          className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg hover:brightness-90 transition mt-4 md:mt-0 cursor-pointer"
         >
           + Nouveau Revenu
         </button>
@@ -158,7 +158,7 @@ const IncomeContent: React.FC = () => {
           <div className="flex justify-between items-center mt-4">
           <button
             onClick={() => setShowAddCategory(true)}
-            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition"
+            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition cursor-pointer"
           >
             + Nouvelle Catégorie
           </button>
@@ -301,13 +301,13 @@ const IncomeContent: React.FC = () => {
             <div className="flex justify-end space-x-2 mt-6">
               <button
                 onClick={() => setShowAddIncome(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg"
+                className="px-4 py-2 bg-gray-300 rounded-lg cursor-pointer"
               >
                 Annuler
               </button>
               <button
                 onClick={() => handleAddIncome({})}
-                className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg"
+                className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg cursor-pointer"
               >
                 Ajouter
               </button>
@@ -326,8 +326,8 @@ const IncomeContent: React.FC = () => {
               <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Abonnements" />
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 bg-gray-300 rounded-lg">Annuler</button>
-              <button onClick={() => handleAddCategory('Nouvelle catégorie')} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg">Créer</button>
+              <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 bg-gray-300 rounded-lg cursor-pointer">Annuler</button>
+              <button onClick={() => handleAddCategory('Nouvelle catégorie')} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg cursor-pointer">Créer</button>
             </div>
           </div>
         </div>

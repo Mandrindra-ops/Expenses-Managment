@@ -32,7 +32,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
 
   return (
     <div className="relative flex w-full min-h-screen items-center justify-center bg-gradient-to-b from-green-300 to-green-200 px-4">
-      <a href="/" className='absolute p-2 rounded-full top-4 left-4'>
+      <a href="/" className='absolute p-2 rounded-full top-4 left-4 cursor-pointer'>
         <AiFillHome className="h-7 w-7 text-white" />
       </a>
 

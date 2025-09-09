@@ -20,6 +20,9 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
   const [mode, setMode] = useState<"list" | "create">("list");
   const [incomes, setIncomes] = useState<Income[]>([]);
 
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Income>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchIncomes = async () => {
@@ -84,13 +87,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
         date: formData.date,
       });
 
-      // Ajouter le nouvel income directement dans la liste
       setIncomes((prev) => [...prev, res.data]);
-
-      // Reset formulaire
       setFormData({ description: "", source: "", amount: "", date: "" });
-
-      // Revenir en mode liste
       handleCancelForm();
     } catch (err: any) {
       if (err.response) {
@@ -100,8 +98,85 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
         console.error("Erreur inconnue:", err.message);
       }
     }
+  };
 
-};
+  // Handling edit
+  // transforme "2025-09-05T..." ou "2025-09-05" -> "YYYY-MM-DD" pour <input type="date">
+  const formatDateForInput = (d?: string) => {
+    if (!d) return "";
+    const date = new Date(d);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const handleEditClick = (income: Income) => {
+    setEditingId(income.id);
+    setEditForm({
+      description: income.description,
+      source: income.source,
+      amount: String(income.amount), // keep as string to allow partial edits
+      date: formatDateForInput(income.date),
+    });
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
+  const handleSaveEdit = async (id: number) => {
+    if (!editingId) return;
+    // validation simple
+    const desc = (editForm.description ?? "").trim();
+    const src = (editForm.source ?? "").trim();
+    const amt = parseFloat(String(editForm.amount ?? "0"));
+    const dateStr = editForm.date;
+
+    if (!desc || !src || !dateStr || isNaN(amt) || amt <= 0) {
+      alert("Please fill all fields correctly."); // remplace par un toast si tu veux
+      return;
+    }
+
+    const payload = {
+      description: desc,
+      source: src,
+      amount: amt,
+      date: dateStr, // format YYYY-MM-DD
+    };
+
+    try {
+      setIsSaving(true);
+      const res = await api.put<Income>(`/incomes/${id}`, payload);
+      const updated = res.data;
+
+      // Mise à jour locale : si date toujours dans le mois courant => remplacer,
+      // sinon supprimer de la liste (car ton écran montre uniquement mois courant)
+      const d = new Date(updated.date);
+      const now = new Date();
+      if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+        setIncomes((prev) => prev.map((it) => (it.id === id ? updated : it)));
+      } else {
+        setIncomes((prev) => prev.filter((it) => it.id !== id));
+      }
+
+      setEditingId(null);
+      setEditForm({});
+    } catch (err: any) {
+      console.error("Update error:", err.response ?? err);
+      // Afficher erreur utilisateur
+      const msg = err?.response?.data?.message || "Update failed";
+      alert(msg); // remplace par toast
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
 
   return (
@@ -162,18 +237,98 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Source</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Montant</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Settings</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {incomes.map((income) => (
                   <tr key={income.id}>
-                    <td>{income.description}</td>
-                    <td>{income.source}</td>
-                    <td>{new Date(income.date).toLocaleDateString("fr-FR")}</td>
-                    <td>{income.amount} Ar</td>
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          name="description"
+                          value={(editForm.description ?? "") as string}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        income.description
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          name="source"
+                          value={(editForm.source ?? "") as string}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        <span className="px-2 py-1 text-xs font-medium bg-[var(--color-income)] text-white rounded-full">{income.source}</span>
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          type="date"
+                          name="date"
+                          value={formatDateForInput(editForm.date ?? income.date)}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        new Date(income.date).toLocaleDateString("fr-FR")
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="amount"
+                          value={(editForm.amount ?? String(income.amount)) as any}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        `${income.amount} Ar`
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSaveEdit(income.id)}
+                            disabled={isSaving}
+                            className="px-3 py-1 bg-green-600 text-white rounded"
+                          >
+                            {isSaving ? "Saving..." : "Save"}
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            disabled={isSaving}
+                            className="px-3 py-1 bg-gray-300 rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleEditClick(income)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
         </>

@@ -10,9 +10,6 @@ interface IncomeAttributes {
   source: string;
   description?: string;
   creationDate?: Date;
-//   receiptPath?: string;
-//   receiptType?: 'jpg' | 'png' | 'pdf';
-//   receiptUploadedAt?: Date;
   userId: number;
 }
 
@@ -26,9 +23,6 @@ export class Income extends Model<IncomeAttributes, IncomeCreationAttributes>
   public source!: string;
   public description?: string;
   public creationDate?: Date;
-//   public receiptPath?: string;
-//   public receiptType?: 'jpg' | 'png' | 'pdf';
-//   public receiptUploadedAt?: Date;
   public userId!: number;
 }
 

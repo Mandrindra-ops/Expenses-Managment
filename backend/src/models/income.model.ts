@@ -10,9 +10,9 @@ interface IncomeAttributes {
   source: string;
   description?: string;
   creationDate?: Date;
-  receiptPath?: string;
-  receiptType?: 'jpg' | 'png' | 'pdf';
-  receiptUploadedAt?: Date;
+//   receiptPath?: string;
+//   receiptType?: 'jpg' | 'png' | 'pdf';
+//   receiptUploadedAt?: Date;
   userId: number;
 }
 
@@ -26,9 +26,9 @@ export class Income extends Model<IncomeAttributes, IncomeCreationAttributes>
   public source!: string;
   public description?: string;
   public creationDate?: Date;
-  public receiptPath?: string;
-  public receiptType?: 'jpg' | 'png' | 'pdf';
-  public receiptUploadedAt?: Date;
+//   public receiptPath?: string;
+//   public receiptType?: 'jpg' | 'png' | 'pdf';
+//   public receiptUploadedAt?: Date;
   public userId!: number;
 }
 
@@ -59,18 +59,6 @@ Income.init(
         creationDate: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
-        },
-        receiptPath: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-        },
-        receiptType: {
-            type: DataTypes.ENUM('jpg', 'png', 'pdf'),
-            allowNull: true,
-        },
-        receiptUploadedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
         },
         userId: {
             type: DataTypes.INTEGER,

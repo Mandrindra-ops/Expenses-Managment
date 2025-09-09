@@ -1,340 +1,462 @@
-import { BanknoteArrowDown, ChartNoAxesCombined, RefreshCcw, Zap } from 'lucide-react';
-import React, { useState } from 'react';
+import { BanknoteArrowDown, ChartNoAxesCombined } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import api from "../../utils/api";
 
 interface Income {
   id: number;
-  title: string;
-  amount: number;
-  category: string;
+  source: string;
+  description: string;
   date: string;
-  recurring: boolean;
-  frequency?: string;
+  amount: number;
 }
 
-const IncomeContent: React.FC = () => {
-  const [showAddIncome, setShowAddIncome] = useState(false);
-    const [showAddCategory, setShowAddCategory] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
-  
-  const categories = ['Salaire', 'Freelance', 'Investissements', 'Location', 'Cadeaux', 'Autre'];
-  const frequencyOptions = ['Mensuel', 'Trimestriel', 'Annuel', 'Ponctuel'];
-  
-  const incomes: Income[] = [
-    { id: 1, title: 'Salaire principal', amount: 2500, category: 'Salaire', date: '2023-10-31', recurring: true, frequency: 'Mensuel' },
-    { id: 2, title: 'Projet freelance', amount: 1200, category: 'Freelance', date: '2023-10-25', recurring: false },
-    { id: 3, title: 'Dividendes actions', amount: 350, category: 'Investissements', date: '2023-10-20', recurring: true, frequency: 'Trimestriel' },
-    { id: 4, title: 'Location appartement', amount: 800, category: 'Location', date: '2023-10-05', recurring: true, frequency: 'Mensuel' },
-    { id: 5, title: 'Cadeau anniversaire', amount: 150, category: 'Cadeaux', date: '2023-10-15', recurring: false },
-  ];
+interface IncomeContentProps {
+  mode?: "list" | "create";
+}
 
-  const filteredIncomes = incomes.filter(income => {
-    const matchesCategory = selectedCategory === 'all' || income.category === selectedCategory;
-    const matchesDateRange = (!dateRange.start || income.date >= dateRange.start) && 
-                            (!dateRange.end || income.date <= dateRange.end);
-    return matchesCategory && matchesDateRange;
+const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"list" | "create">("list");
+  const [incomes, setIncomes] = useState<Income[]>([]);
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Income>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchIncomes = async () => {
+      try {
+        const res = await api.get<Income[]>("/incomes");
+        const data = res.data;
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const monthlyIncomes = data.filter((income) => {
+          const d = new Date(income.date);
+          return (
+            d.getMonth() === currentMonth && d.getFullYear() === currentYear
+          );
+        });
+
+        setIncomes(monthlyIncomes);
+      } catch (err) {
+        console.error("Erreur lors du fetch des revenus:", err);
+      }
+    };
+
+    fetchIncomes();
+  }, []);
+  
+  const handleOpenForm = () => {
+    navigate("/dashboard/incomes/new"); 
+    setMode("create")
+  };
+
+  const handleCancelForm = () => {
+    navigate("/dashboard/incomes"); 
+    setMode("list")
+  };
+
+  const totalAmount = incomes.reduce((sum, income) => sum + income.amount, 0);
+  const monthlyAverage = incomes.length > 0 ? totalAmount / incomes.length : 0;
+
+  const [formData, setFormData] = useState({
+    description: "",
+    source: "",
+    amount: "",
+    date: "",
   });
 
-  const totalAmount = filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
-  const monthlyAverage = totalAmount / 3; // Simplifié pour l'exemple
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  const handleAddIncome = (incomeData: any) => {
-    console.log('Nouveau revenu:', incomeData);
-    setShowAddIncome(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await api.post<Income>("/incomes", {
+        description: formData.description,
+        source: formData.source,
+        amount: parseFloat(formData.amount),
+        date: formData.date,
+      });
+
+      setIncomes((prev) => [...prev, res.data]);
+      setFormData({ description: "", source: "", amount: "", date: "" });
+      handleCancelForm();
+    } catch (err: any) {
+      if (err.response) {
+        console.error("Backend error:", err.response.data);
+        console.error("Status:", err.response.status);
+      } else {
+        console.error("Erreur inconnue:", err.message);
+      }
+    }
   };
-   const handleAddCategory = (categoryName: string) => {
-    console.log('Nouvelle catégorie:', categoryName);
-    setShowAddCategory(false);
+
+  // Handling edit
+  // transforme "2025-09-05T..." ou "2025-09-05" -> "YYYY-MM-DD" pour <input type="date">
+  const formatDateForInput = (d?: string) => {
+    if (!d) return "";
+    const date = new Date(d);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
   };
+
+  const handleEditClick = (income: Income) => {
+    setEditingId(income.id);
+    setEditForm({
+      description: income.description,
+      source: income.source,
+      amount: String(income.amount), // keep as string to allow partial edits
+      date: formatDateForInput(income.date),
+    });
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
+  const handleSaveEdit = async (id: number) => {
+    if (!editingId) return;
+    // validation simple
+    const desc = (editForm.description ?? "").trim();
+    const src = (editForm.source ?? "").trim();
+    const amt = parseFloat(String(editForm.amount ?? "0"));
+    const dateStr = editForm.date;
+
+    if (!desc || !src || !dateStr || isNaN(amt) || amt <= 0) {
+      alert("Please fill all fields correctly."); // remplace par un toast si tu veux
+      return;
+    }
+
+    const payload = {
+      description: desc,
+      source: src,
+      amount: amt,
+      date: dateStr, // format YYYY-MM-DD
+    };
+
+    try {
+      setIsSaving(true);
+      const res = await api.put<Income>(`/incomes/${id}`, payload);
+      const updated = res.data;
+
+      // Mise à jour locale : si date toujours dans le mois courant => remplacer,
+      // sinon supprimer de la liste (car ton écran montre uniquement mois courant)
+      const d = new Date(updated.date);
+      const now = new Date();
+      if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+        setIncomes((prev) => prev.map((it) => (it.id === id ? updated : it)));
+      } else {
+        setIncomes((prev) => prev.filter((it) => it.id !== id));
+      }
+
+      setEditingId(null);
+      setEditForm({});
+    } catch (err: any) {
+      console.error("Update error:", err.response ?? err);
+      // Afficher erreur utilisateur
+      const msg = err?.response?.data?.message || "Update failed";
+      alert(msg); // remplace par toast
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+   // Handling delete
+    const handleStartDelete = (id: number) => {
+      setDeletingId(id);
+      // Si cet élément était en édition, annule l'édition
+      if (editingId === id) handleCancelEdit();
+    };
+
+    const handleCancelDelete = () => {
+      setDeletingId(null);
+    };
+
+    const handleConfirmDelete = async (id: number) => {
+      try {
+        await api.delete(`/incomes/${id}`);
+        setIncomes((prev) => prev.filter((income) => income.id !== id));
+      } catch (err: any) {
+        console.error("Delete error:", err.response ?? err);
+        const msg = err?.response?.data?.message || "Suppression échouée";
+        alert(msg);
+      } finally {
+        setDeletingId(null);
+      }
+    };
+
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-[var(--color-bg)]">
-      {/* En-tête */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">Suivi des Revenus</h1>
+          <h1 className="text-2xl font-bold">
+            Revenus du mois de{" "}
+            {new Date().toLocaleString("fr-FR", { month: "long", year: "numeric" })}
+          </h1>
           <p className="text-[var(--color-text-sub)]">Gérez et suivez toutes vos sources de revenus</p>
         </div>
-        <button
-          onClick={() => setShowAddIncome(true)}
-          className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg hover:brightness-90 transition mt-4 md:mt-0"
-        >
-          + Nouveau Revenu
-        </button>
-      </div>
 
-      {/* Cartes de statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-[var(--color-income)] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm"><BanknoteArrowDown /></span>
-              </div>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-[var(--color-text-sub)]">Total Revenus</p>
-              <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2)} €</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm"><ChartNoAxesCombined /></span>
-              </div>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-[var(--color-text-sub)]">Moyenne Mensuelle</p>
-              <p className="text-xl font-bold text-[var(--color-text)]">{monthlyAverage.toFixed(2)} €</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-[var(--color-secondary)] rounded-full flex items-center justify-center">
-                <span className="text-white text-sm"><RefreshCcw /></span>
-              </div>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-[var(--color-text-sub)]">Revenus Récurrents</p>
-              <p className="text-xl font-bold text-[var(--color-text)]">
-                {incomes.filter(income => income.recurring).length}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filtres */}
-      <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Filtre par catégorie */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-              Catégorie
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
-            >
-              <option value="all">Toutes les catégories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filtre par date de début */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-              Date de début
-            </label>
-            <input
-              type="date"
-              value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-
-          {/* Filtre par date de fin */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-              Date de fin
-            </label>
-            <input
-              type="date"
-              value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
-            />
-          </div>
-          <div className="flex justify-between items-center mt-4">
+        {mode === "list" && (
           <button
-            onClick={() => setShowAddCategory(true)}
-            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition"
+            onClick={handleOpenForm}
+            className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg hover:brightness-90 transition mt-4 md:mt-0"
           >
-            + Nouvelle Catégorie
+            + Nouveau Revenu
           </button>
-        </div>
-        </div>
+        )}
       </div>
 
-      {/* Liste des revenus */}
-      <div className="bg-[var(--color-bg-card)] rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[var(--color-bg)]">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
-                  Catégorie
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase tracking-wider">
-                  Montant
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredIncomes.map((income) => (
-                <tr key={income.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-[var(--color-text)]">
-                    {income.title}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs font-medium bg-[var(--color-income)] text-white rounded-full">
-                      {income.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[var(--color-text)]">
-                    {new Date(income.date).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {income.recurring ? (
-                      <span className="flex items-center gap-2 px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
-                        <RefreshCcw /> {income.frequency}
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2 px-2 py-1 text-xs font-medium bg-[var(--color-secondary)] text-white rounded-full">
-                        <Zap /> Ponctuel
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-[var(--color-text)] font-medium text-green-600">
-                    +{income.amount.toFixed(2)} €
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Modal pour ajouter un revenu */}
-      {showAddIncome && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouveau Revenu</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  placeholder="Ex: Salaire octobre"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Catégorie
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-lg">
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Montant (€)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                  placeholder="0.00"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-
+       {/* Cartes de stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4">
               <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="recurring"
-                  className="mr-2 h-4 w-4 text-[var(--color-primary)]"
-                />
-                <label htmlFor="recurring" className="text-sm text-[var(--color-text)]">
-                  Revenu récurrent
-                </label>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                  Fréquence
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded-lg">
-                  {frequencyOptions.map(freq => (
-                    <option key={freq} value={freq}>{freq}</option>
-                  ))}
-                </select>
+                <div className="w-8 h-8 bg-[var(--color-income)] rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm"><BanknoteArrowDown /></span>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-[var(--color-text-sub)]">Total Revenus</p>
+                  <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2)} Ar</p>
+                </div>
               </div>
             </div>
-            
-            <div className="flex justify-end space-x-2 mt-6">
-              <button
-                onClick={() => setShowAddIncome(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg"
+            <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm"><ChartNoAxesCombined /></span>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-[var(--color-text-sub)]">Moyenne Mensuelle</p>
+                  <p className="text-xl font-bold text-[var(--color-text)]">{monthlyAverage.toFixed(2)} Ar</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      {mode === "list" ? (
+        <>
+          {/* Table des revenus */}
+          <div className="bg-[var(--color-bg-card)] rounded-lg shadow overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-[var(--color-bg)]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Source</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Montant</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Settings</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {incomes.map((income) => (
+                  <tr key={income.id}>
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          name="description"
+                          value={(editForm.description ?? "") as string}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        income.description
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          name="source"
+                          value={(editForm.source ?? "") as string}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        <span className="px-2 py-1 text-xs font-medium bg-[var(--color-income)] text-white rounded-full">{income.source}</span>
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          type="date"
+                          name="date"
+                          value={formatDateForInput(editForm.date ?? income.date)}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        new Date(income.date).toLocaleDateString("fr-FR")
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="amount"
+                          value={(editForm.amount ?? String(income.amount)) as any}
+                          onChange={handleEditChange}
+                          className="w-full p-2 border rounded"
+                        />
+                      ) : (
+                        `${income.amount} Ar`
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {editingId === income.id ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSaveEdit(income.id)}
+                            disabled={isSaving}
+                            className="px-3 py-1 bg-green-600 text-white rounded"
+                          >
+                            {isSaving ? "Saving..." : "Save"}
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            disabled={isSaving}
+                            className="px-3 py-1 bg-gray-300 rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : deletingId === income.id ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleConfirmDelete(income.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={handleCancelDelete}
+                            className="px-3 py-1 bg-gray-300 rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(income)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleStartDelete(income.id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+          </div>
+        </>
+      ) : (
+        /* FORM CREATE */
+        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold mb-4">Ajouter un revenu</h2>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Description
+              </label>
+              <input
+                type="text"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Ex: Salaire octobre"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Source
+              </label>
+              <input
+                type="text"
+                name="source"
+                value={formData.source}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Ex: Salaire"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Montant (Ar)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="0.00"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button 
+                type="button" 
+                onClick={handleCancelForm} 
+                className="px-4 py-2 bg-gray-300 rounded"
               >
                 Annuler
               </button>
-              <button
-                onClick={() => handleAddIncome({})}
-                className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg"
+              <button 
+                type="submit" 
+                className="px-4 py-2 bg-[var(--color-income)] text-white rounded"
               >
-                Ajouter
+                Enregistrer
               </button>
             </div>
-          </div>
-        </div>
-        
-      )}
-      {/* Modal pour ajouter une catégorie */}
-      {showAddCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Catégorie</h2>
-            <div>
-              <label className="block text-sm text-[var(--color-text-sub)] mb-1">Nom de la catégorie</label>
-              <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Abonnements" />
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 bg-gray-300 rounded-lg">Annuler</button>
-              <button onClick={() => handleAddCategory('Nouvelle catégorie')} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg">Créer</button>
-            </div>
-          </div>
+          </form>
         </div>
       )}
-
     </div>
-
   );
 };
 

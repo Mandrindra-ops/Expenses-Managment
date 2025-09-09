@@ -23,6 +23,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Partial<Income>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchIncomes = async () => {
@@ -178,6 +179,30 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
     }
   };
 
+   // Handling delete
+    const handleStartDelete = (id: number) => {
+      setDeletingId(id);
+      // Si cet élément était en édition, annule l'édition
+      if (editingId === id) handleCancelEdit();
+    };
+
+    const handleCancelDelete = () => {
+      setDeletingId(null);
+    };
+
+    const handleConfirmDelete = async (id: number) => {
+      try {
+        await api.delete(`/incomes/${id}`);
+        setIncomes((prev) => prev.filter((income) => income.id !== id));
+      } catch (err: any) {
+        console.error("Delete error:", err.response ?? err);
+        const msg = err?.response?.data?.message || "Suppression échouée";
+        alert(msg);
+      } finally {
+        setDeletingId(null);
+      }
+    };
+
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-[var(--color-bg)]">
@@ -316,13 +341,36 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                             Cancel
                           </button>
                         </div>
+                      ) : deletingId === income.id ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleConfirmDelete(income.id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={handleCancelDelete}
+                            className="px-3 py-1 bg-gray-300 rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       ) : (
-                        <button
-                          onClick={() => handleEditClick(income)}
-                          className="px-3 py-1 bg-blue-500 text-white rounded"
-                        >
-                          Edit
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(income)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleStartDelete(income.id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

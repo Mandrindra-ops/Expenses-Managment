@@ -28,18 +28,6 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('NOW()'),
       },
-      receiptPath: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      receiptType: {
-        type: Sequelize.ENUM('jpg', 'png', 'pdf'),
-        allowNull: true,
-      },
-      receiptUploadedAt: {
-        type: Sequelize.DATE,
-        allowNull: true,
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

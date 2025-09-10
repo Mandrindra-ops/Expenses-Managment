@@ -1,65 +1,33 @@
-import path from "path";
-import { stat, readFile } from "fs/promises";
-import {sanitizeFilename} from "../utils/utils";
-import { getMimeType } from "../utils/utils";
+import { Response } from 'express';
+import Expense from '../models/expense.model';
+import fs from 'fs';
+import path from 'path';
 
-const RECEIPTS_DIR = path.resolve("receipts");
-
-export interface ReceiptResult {
-  fileBuffer: Buffer;
-  mimeType: string;
-  size: number;
-  filename: string;
-  lastModified: Date;
-}
-
-export async function getReceiptFile(id: string): Promise<ReceiptResult> {
-  const sanitizedId = sanitizeFilename(id);
-
-  const possibleExtensions = [
-    ".pdf", ".jpg", ".jpeg", ".png",
-    ".gif", ".webp", ".tiff", ".bmp"
-  ];
-
-  let filePath: string | null = null;
-  let foundExtension = "";
-
-  for (const ext of possibleExtensions) {
-    const testPath = path.join(RECEIPTS_DIR, `${sanitizedId}${ext}`);
-    try {
-      await stat(testPath);
-      filePath = testPath;
-      foundExtension = ext;
-      break;
-    } catch {
-      continue;
+/**
+ * Service to download the receipt of an expense
+ */
+export const downloadExpenseReceipt = async (expenseId: number, res: Response) => {
+  try {
+    const expense = await Expense.findByPk(expenseId);
+    if (!expense || !expense.receipt) {
+      return res.status(404).json({ message: 'Receipt not found' });
     }
-  }
 
-  if (!filePath) {
-    const testPath = path.join(RECEIPTS_DIR, sanitizedId);
-    try {
-      await stat(testPath);
-      filePath = testPath;
-    } catch {
-      throw new Error("NOT_FOUND");
+    const uploadsFolder = path.join(__dirname, '../uploads/receipts');
+    const filePath = path.join(uploadsFolder, expense.receipt);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'File does not exist on server' });
     }
+
+    res.download(filePath, expense.receipt, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(500).json({ message: 'Could not download the file' });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  const stats = await stat(filePath);
-
-  if (!stats.isFile()) {
-    throw new Error("NOT_FILE");
-  }
-
-  const fileBuffer = await readFile(filePath);
-  const mimeType = getMimeType(filePath);
-
-  return {
-    fileBuffer,
-    mimeType,
-    size: stats.size,
-    filename: `receipt-${sanitizedId}${foundExtension}`,
-    lastModified: stats.mtime,
-  };
-}
+};

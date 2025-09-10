@@ -1,4 +1,4 @@
-import { ReceiptText } from 'lucide-react';
+import { Edit2, ReceiptText, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import api from '../../utils/api'; 
 
@@ -143,6 +143,60 @@ const [receiptFile, setReceiptFile] = useState<File | null>(null);
   }
 };
 
+// handle edit and delete
+const [editingExpenseId, setEditingExpenseId] = useState<number | null>(null);
+const [editingExpenseData, setEditingExpenseData] = useState<Partial<Expense>>({});
+const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
+
+const handleUpdateExpense = async (id: number) => {
+  try {
+    const formData = new FormData();
+    formData.append('description', editingExpenseData.description || '');
+    formData.append('amount', String(editingExpenseData.amount || 0));
+    formData.append('date', editingExpenseData.date || '');
+    formData.append('categoryId', String(editingExpenseData.categoryId || 0));
+    formData.append('type', editingExpenseData.type || 'OneTime');
+    if (editingExpenseData.startDate) formData.append('startDate', editingExpenseData.startDate);
+    if (editingExpenseData.endDate) formData.append('endDate', editingExpenseData.endDate);
+    if (receiptFile) formData.append('receipt', receiptFile);
+
+    const response = await api.put(`/expenses/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    window.location.reload();
+    setEditingExpenseId(null);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
+const handleDelete = async (id: number) => {
+  if (!id || isNaN(id)) {
+    console.error("ID de dépense invalide :", id);
+    setDeleteConfirmId(null);
+    return;
+  }
+
+  try {
+    const response = await api.delete(`/expenses/${id}`);
+
+    if (response.status >= 200 && response.status < 300) {
+      setExpenses((prev) => prev.filter((e) => e.id !== id));
+    } else {
+      console.error("Erreur lors de la suppression, status :", response.status);
+      alert("Impossible de supprimer cette dépense.");
+    }
+  } catch (err) {
+    console.error("Erreur lors de la suppression :", err);
+    alert("Erreur serveur : impossible de supprimer la dépense.");
+  } finally {
+    setDeleteConfirmId(null); // Toujours réinitialiser le mini-modal
+  }
+};
+
+
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-[var(--color-bg)]">
@@ -214,29 +268,197 @@ const [receiptFile, setReceiptFile] = useState<File | null>(null);
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredExpenses.map(expense => {
-                const category = categories.find(c => c.id === expense.categoryId);
+              {filteredExpenses.map((expense) => {
+                const category = categories.find((c) => c.id === expense.categoryId);
+                const isEditing = editingExpenseId === expense.id;
+
                 return (
                   <tr key={expense.id}>
-                    <td className="px-6 py-4 text-[var(--color-text)]">{expense.description}</td>
-                    <td className="px-6 py-4 text-[var(--color-text)]">{expense.type}</td>
-                    <td className="px-6 py-4">
-                      <span className="px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
-                        {category ? category.name : "Inconnu"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-[var(--color-text)]">{new Date(expense.date).toLocaleDateString('fr-FR')}</td>
-                    <td className="px-6 py-4 text-[var(--color-text)] font-medium ">{expense.amount.toFixed(2)} €</td>
-                    <td className="px-6 py-4">
-                      {expense.receipt && (
-                        <button
-                          onClick={() => handleDownloadReceipt(expense.id)}
-                          className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
-                        >
-                          <ReceiptText className="w-4 h-4" /> Reçu
-                        </button>
-                      )}
-                    </td>
+                    {isEditing ? (
+                      <>
+                        {/* Description */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="text"
+                            value={editingExpenseData.description || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, description: e.target.value }))
+                            }
+                            className="border rounded p-1 w-full"
+                          />
+                        </td>
+
+                        {/* Type */}
+                        <td className="px-6 py-4">
+                          <select
+                            value={editingExpenseData.type || 'OneTime'}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, type: e.target.value as 'OneTime' | 'Recurring' }))
+                            }
+                            className="border rounded p-1 w-full"
+                          >
+                            <option value="OneTime">One Time</option>
+                            <option value="Recurring">Recurring</option>
+                          </select>
+                        </td>
+
+                        {/* Category */}
+                        <td className="px-6 py-4">
+                          <select
+                            value={editingExpenseData.categoryId || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, categoryId: Number(e.target.value) }))
+                            }
+                            className="border rounded p-1 w-full"
+                          >
+                            {categories.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+
+                        {/* Date */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="date"
+                            value={editingExpenseData.date?.slice(0, 10) || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, date: e.target.value }))
+                            }
+                            className="border rounded p-1 w-full"
+                          />
+                        </td>
+
+                        {/* Amount */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={editingExpenseData.amount || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, amount: Number(e.target.value) }))
+                            }
+                            className="border rounded p-1 w-full"
+                          />
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-6 py-4 flex gap-2">
+                          {editingExpenseData.type === 'Recurring' && (
+                            <>
+                              <input
+                                type="date"
+                                value={editingExpenseData.startDate || ''}
+                                onChange={(e) =>
+                                  setEditingExpenseData((prev) => ({ ...prev, startDate: e.target.value }))
+                                }
+                                className="border rounded p-1 w-full"
+                              />
+                              <input
+                                type="date"
+                                value={editingExpenseData.endDate || ''}
+                                onChange={(e) =>
+                                  setEditingExpenseData((prev) => ({ ...prev, endDate: e.target.value }))
+                                }
+                                className="border rounded p-1 w-full"
+                              />
+                            </>
+                          )}
+
+                          <input
+                            type="file"
+                            onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                            className="border rounded p-1 w-full"
+                          />
+
+                          <button
+                            onClick={() => handleUpdateExpense(expense.id)}
+                            className="px-2 py-1 bg-green-500 text-white rounded hover:brightness-90"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingExpenseId(null)}
+                            className="px-2 py-1 bg-gray-400 text-white rounded hover:brightness-90"
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        {/* Affichage normal */}
+                        <td className="px-6 py-4 text-[var(--color-text)]">{expense.description}</td>
+                        <td className="px-6 py-4 text-[var(--color-text)]">{expense.type}</td>
+                        <td className="px-6 py-4">
+                          <span className="px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
+                            {category ? category.name : 'Inconnu'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-[var(--color-text)]">
+                          {new Date(expense.date).toLocaleDateString('fr-FR')}
+                        </td>
+                        <td className="px-6 py-4 text-[var(--color-text)] font-medium">
+                          {expense.amount.toFixed(2)} €
+                        </td>
+                        <td className="px-6 py-4 flex items-center gap-2">
+                            {/* Delete: si on est en mode confirmation on affiche Confirm/Cancel sans les bouttons ,
+                                sinon on affiche l'icône poubelle.*/}
+                            {deleteConfirmId === expense.id ? (
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(expense.id)}
+                                  className="px-2 py-1 bg-red-600 text-white rounded hover:brightness-90"
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="px-2 py-1 bg-gray-400 text-white rounded hover:brightness-90"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <div  className="px-6 py-4 flex items-center gap-2">
+                                {expense.receipt && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDownloadReceipt(expense.id)}
+                                    className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
+                                    aria-label={`Download receipt ${expense.id}`}
+                                  >
+                                    <ReceiptText className="w-4 h-4" /> Reçu
+                                  </button>
+                                )}
+                                <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingExpenseId(expense.id);
+                                  setEditingExpenseData({ ...expense });
+                                }}
+                                className="p-1 bg-blue-500 text-white rounded hover:brightness-90"
+                                aria-label={`Edit ${expense.id}`}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                  type="button"
+                                  onClick={() => setDeleteConfirmId(expense.id)}
+                                  className="p-1 bg-red-500 text-white rounded hover:brightness-90"
+                                  aria-label={`Delete ${expense.id}`}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                            )}
+                          </td>
+                      </>
+                    )}
                   </tr>
                 );
               })}

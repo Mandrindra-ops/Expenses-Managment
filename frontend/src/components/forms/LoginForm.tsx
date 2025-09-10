@@ -1,5 +1,5 @@
 import { AiFillHome } from 'react-icons/ai';
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -99,7 +99,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
               className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-xl text-gray-400"
               onClick={() => setShowPassword((prev) => !prev)}
             >
-              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
             </span>
           </div>
           {!isLoginMode && (

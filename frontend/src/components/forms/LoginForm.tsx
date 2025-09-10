@@ -1,4 +1,5 @@
 import { AiFillHome } from 'react-icons/ai';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +10,7 @@ interface LoginFormProps {
 export default function LoginForm({ mode }: LoginFormProps) {
   const isLoginModeInitial = mode === 'login';
   const [isLoginMode, setIsLoginMode] = useState(isLoginModeInitial);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,13 +87,21 @@ export default function LoginForm({ mode }: LoginFormProps) {
             required
             className="w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400"
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-            className="w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400 transition-all"
-          />        
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              required
+              className="w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400 transition-all"
+            />
+            <span
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-xl text-gray-400"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </span>
+          </div>
           {!isLoginMode && (
             <input
               type="password"

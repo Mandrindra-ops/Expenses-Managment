@@ -3,6 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import DashboardSidebar from '../features/Dashboard/DashboardSidebar';
 import DashboardHeader from '../features/Dashboard/DashboardHeader';
 import { useAccountStore } from '../store';
+import { Loader } from '../components/ui/Loader';
 
 
 const Dashboard: React.FC = () => {
@@ -10,7 +11,7 @@ const Dashboard: React.FC = () => {
     const user = useAccountStore((state) => state.user);
     const authStatus = useAccountStore((state) => state.status);
 
-    if (authStatus === "pending") return <div>Cargando...</div>;
+    if (authStatus === "pending") return <Loader />
     if (authStatus === "unauthorized") return <Navigate to="/login" />;
     return (
         <div className="flex h-screen bg-[var(--color-bg)]">

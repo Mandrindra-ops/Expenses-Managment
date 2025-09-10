@@ -9,26 +9,26 @@ import LoginForm from './components/forms/LoginForm';
 import IncomeContent from './features/Income/IncomeContent';
 
 const App: React.FC = () => {
-  return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginForm mode="login" />} />
-          <Route path="/signup" element={<LoginForm mode="signup" />} />
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route index element={<DashboardContent />} />
-            <Route path="profile" element={<Profil />} />
-            <Route path="expenses" element={<Expense />} />
-            <Route path="incomes">
-              <Route index element={<IncomeContent />} /> 
-              <Route path="new" element={<IncomeContent mode="create" />} /> 
-            </Route>
-          </Route>
-        </Routes>
-      </div>
-    </Router>
-  );
+    return (
+        <Router>
+            <div className="App">
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginForm mode="login" />} />
+                    <Route path="/signup" element={<LoginForm mode="signup" />} />
+                    <Route path="/dashboard" element={<Dashboard />}>
+                        <Route index element={<DashboardContent />} />
+                        <Route path="profile" element={<Profil />} />
+                        <Route path="expenses" element={<Expense />} />
+                        <Route path="incomes">
+                            <Route index element={<IncomeContent />} />
+                            <Route path="new" element={<IncomeContent mode="create" />} />
+                        </Route>
+                    </Route>
+                </Routes>
+            </div>
+        </Router>
+    );
 };
 
 export default App;

@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { useAccount } from "../../hooks/useAccount";
+import type { User } from "../../types";
 
 interface DashboardHeaderProps {
     setSidebarOpen: (open: boolean) => void;
+    username?: User;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ setSidebarOpen }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ setSidebarOpen, username }) => {
     const [darkMode, setDarkMode] = useState<boolean>(false);
-    const { account } = useAccount();
+
     useEffect(() => {
         const root: HTMLElement = window.document.documentElement;
         if (darkMode) {
@@ -20,7 +21,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ setSidebarOpen }) => 
 
     return (
         <header className="flex items-center justify-between h-18 bg-[var(--color-bg-card)] border-b border-gray-200">
-            <h2 className="text-2xl text-emerald-400 font-bold">{account ?? "User"}</h2>
+            <h2 className="text-2xl text-emerald-400 font-bold">{JSON.stringify(username) ?? "User"}</h2>
             <div className="flex items-center">
                 <button
                     className="text-[var(--color-text-sub)] hover:text-[var(--color-text)] lg:hidden"

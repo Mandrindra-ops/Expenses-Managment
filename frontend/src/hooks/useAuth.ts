@@ -10,7 +10,7 @@ const Guest = "Guest";
 const Authenticated = "Authenticated";
 
 export const useAuth = () => {
-  const { account,clear,setAccount,login,authenticated,setToken } = useAccountStore();
+  const { account,clear,setAccount,login,authenticated,setToken ,signup ,token} = useAccountStore();
   let status = Unknown;
   switch (account) {
     case null:
@@ -23,14 +23,5 @@ export const useAuth = () => {
       status = Authenticated;
       break;
   }
-    const signup = async (email: string, password:string) => {
-        try{
-
-        await apiFetch("/auth/signup",{method:"POST", json:{ email,password}})
-        } catch(err){
-            if(err instanceof Error)
-                throw new Error({message: err.message})
-        }
-    }
-  return { account, authenticated, status, login, setAccount,clear,setToken, signup };
+  return { account, authenticated, status, login, setAccount,clear,setToken, signup,token };
 };

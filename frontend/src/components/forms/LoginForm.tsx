@@ -19,10 +19,6 @@ export default function LoginForm({ mode }: LoginFormProps) {
     const navigate = useNavigate();
     const { login, signup } = useAuth()
 
-    // useEffect(() => {
-    //     setIsLoginMode(mode === 'login');
-    // }, [mode]);
-
     const toggleMode = (newMode: boolean) => {
         if (newMode) {
             setIsLoginMode(true)

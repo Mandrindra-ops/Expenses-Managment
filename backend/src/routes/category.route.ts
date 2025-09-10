@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authenticateJWT } from '../middlewares/auth.middleware';
 import { listCategories, createCategory, updateCategory, deleteCategory } from '../controllers/category.controller';
-import { validateBody, validateQuery } from '../utils/validator';
+import { validateBody, validateQuery, validateParams } from '../utils/validator';
 import {createCategorySchema,updateCategorySchema} from '../validator/categories.validator'
 import { idParamSchema } from '../validator/base.validator';
 const router = Router();
@@ -10,7 +10,7 @@ router.use(authenticateJWT);
 
 router.get('/', listCategories);
 router.post('/',validateBody(createCategorySchema), createCategory);
-router.put('/:id',validateQuery(idParamSchema),validateQuery(updateCategorySchema), updateCategory);
-router.delete('/:id',validateQuery(idParamSchema), deleteCategory);
+router.put('/:id',validateParams(idParamSchema),validateBody(updateCategorySchema), updateCategory);
+router.delete('/:id',validateParams(idParamSchema), deleteCategory);
 
 export default router

@@ -33,5 +33,7 @@
   --color-alert: #FBBF24;
 }
 
-button{
+.flou{
+  background: linear-gradient(rgb(0,0,0,0.2),rgb(0,0,0,0.2));
+  backdrop-filter: blur(2px);
 }

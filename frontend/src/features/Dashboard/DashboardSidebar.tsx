@@ -1,6 +1,6 @@
-import { BanknoteArrowUp, ChartNoAxesCombined, CircleDollarSign, LogOut, UserRound } from 'lucide-react';
+import { BanknoteArrowUp, ChartNoAxesCombined, CircleDollarSign, LogOut, UserRound, Boxes } from 'lucide-react';
 import React from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link,useLocation, useNavigate } from 'react-router-dom';
 
 interface DashboardSidebarProps {
     sidebarOpen: boolean;
@@ -14,6 +14,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
     
     const navigationItems = [
         { name: 'Dashboard', icon: ChartNoAxesCombined, href: '/dashboard' },
+        { name: 'Categories', icon: Boxes, href: '/dashboard/categories' },
         { name: 'Expenses', icon: CircleDollarSign, href: '/dashboard/expenses' },
         { name: 'Incomes', icon: BanknoteArrowUp, href: '/dashboard/incomes' },
     ];
@@ -23,9 +24,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
     ];
 
     const handleLogout = () => {
-        // Supprimer token et reset state global
         localStorage.removeItem("token");
-        // navigate vers login
         navigate("/");
     };
 

@@ -16,7 +16,10 @@ dotenv.config();
 const app = express();
 
 // Middlewares globaux
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // pas "*", mettre l'URL exacte
+  credentials: true,               // pour autoriser les cookies / headers auth
+}))
 app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);

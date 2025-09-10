@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import LoginForm from './components/forms/LoginForm';
 import IncomeContent from './features/Income/IncomeContent';
 import ExpenseContent from './features/Expense/ExpenseContent';
+import CategoryContent from './features/Category/CategoryContent';
 
 const App: React.FC = () => {
   return (
@@ -19,14 +20,13 @@ const App: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardContent />} />
             <Route path="profile" element={<Profil />} />
-            <Route path="expenses">
-              <Route index element={<ExpenseContent />} /> 
-              {/* <Route path="categories" element={<Profil />} /> */}
-            </Route>
+            <Route path="expenses" element={<ExpenseContent />} />
+            <Route path="expenses" element={<ExpenseContent />} />
             <Route path="incomes">
               <Route index element={<IncomeContent />} /> 
               <Route path="new" element={<IncomeContent mode="create" />} /> 
             </Route>
+            <Route path="categories" element={<CategoryContent />} />
           </Route>
         </Routes>
       </div>

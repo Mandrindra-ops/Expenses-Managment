@@ -1,9 +1,13 @@
+import { useCallback } from "react";
 import { useAuth } from "./useAuth";
 
+
 export const useAccount = () => {
-  const { account, setAccount } = useAuth();
-  if (!account) {
-    throw new Error("User is not authenticated");
-  }
-  return { account, updateInfoUser: setAccount };
+  const { account , setAccount ,authenticated} = useAuth();
+    const getUser = useCallback(async ()=>(await authenticated()),[authenticated])
+    const user = getUser()
+if(!user){
+        throw new Error(" error in useAccount ")
+    }
+  return { account ,updateInfoUser: setAccount };
 };

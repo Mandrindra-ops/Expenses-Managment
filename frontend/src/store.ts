@@ -1,12 +1,11 @@
 import { create } from "zustand";
 import { combine, persist } from "zustand/middleware";
-import {jwtDecode} from "jwt-decode";
 import { apiFetch } from "./utils/apiFetch"; // <-- ton helper pour fetch
+import api from "./utils/api";
 
 export interface Account {
   id: string;
   email: string;
-  role?: string;
 }
 
 export interface State {
@@ -22,20 +21,6 @@ export const useAccountStore = create(
         account: null as Account | null,
       },
       (set, get) => ({
-        setToken: (token: string | null) => {
-          if (token) {
-            try {
-              const decoded: Account = jwtDecode(token);
-              set({ token, account: decoded });
-            } catch (e) {
-              console.error("Token invalide", e);
-              set({ token: null, account: null });
-            }
-          } else {
-            set({ token: null, account: null });
-          }
-        },
-
         setAccount: (account: Account | null) => set({ account }),
 
         clear: () => set({ token: null, account: null }),
@@ -43,8 +28,8 @@ export const useAccountStore = create(
         // Vérifie l'utilisateur depuis l'API
         authenticated: async () => {
           try {
-            const me = await apiFetch<Account>("/me",{method:"GET"});
-            set({ account: me });
+            const me = await api<Account>("auth/me");
+            set({ account: me.data});
           } catch {
             set({ account: null });
           }
@@ -62,6 +47,14 @@ export const useAccountStore = create(
             set({ token: null, account: null });
           }
         },
+        signup : async (email: string, password:string) => {
+        try{
+
+        await apiFetch("/auth/signup",{method:"POST", json:{ email,password}})
+        } catch{
+            set({ token: null, account: null });
+            }
+    }
       })
     ),
     {

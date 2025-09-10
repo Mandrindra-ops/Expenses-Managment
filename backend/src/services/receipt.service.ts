@@ -13,8 +13,7 @@ export const downloadExpenseReceipt = async (expenseId: number, res: Response) =
       return res.status(404).json({ message: 'Receipt not found' });
     }
 
-    const uploadsFolder = path.join(__dirname, '../uploads/receipts');
-    const filePath = path.join(uploadsFolder, expense.receipt);
+    const filePath = expense.receipt;
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: 'File does not exist on server' });

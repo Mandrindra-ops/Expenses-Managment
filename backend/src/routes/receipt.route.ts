@@ -1,11 +1,9 @@
-import {Router} from 'express'
-import { authenticateJWT } from '../middlewares/auth.middleware';
-import { validateParams } from '../utils/validator';
-import { receiptIdSchema } from '../validator/receipt.validator';
+import { Router } from 'express';
+import { downloadReceiptController } from '../controllers/receipt.controller';
 
-const route = Router();
+const router = Router();
 
-route.use(authenticateJWT);
+// Route calls the controller
+router.get('/:expenseId', downloadReceiptController);
 
-route.use('/:id',validateParams(receiptIdSchema),)
-export default route;
+export default router;

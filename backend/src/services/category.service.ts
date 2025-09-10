@@ -5,7 +5,7 @@ export const getAllCategories = async (userId: number) => {
 };
 
 export const getCategoryById = async (userId: number, id: number) => {
-  return Category.findOne({ where: { userId, idCategory: id } });
+  return Category.findOne({ where: { userId, id } });
 };
 
 export const createCategory = async (userId: number, name: string, description?: string) => {

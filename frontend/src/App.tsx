@@ -24,6 +24,7 @@ const App: React.FC = () => {
               <Route index element={<IncomeContent />} />
               <Route path="new" element={<IncomeContent mode="create" />} />
             </Route>
+            <Route path="categories" element={<CategoryContent />} />
           </Route>
         </Routes>
       </div>

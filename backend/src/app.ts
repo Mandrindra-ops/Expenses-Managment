@@ -8,7 +8,7 @@ import incomeRoutes from "./routes/income.route";
 import sequelize from "./utils/database";
 import summaryRoutes from "./routes/summary.route";
 import userRoutes from './routes/user.route'
-import receiptRoutes from './routes/receipt.route'
+import downloadRoutes from './routes/receipt.route'
 
 
 dotenv.config();
@@ -21,7 +21,6 @@ app.use(cors({
   credentials: true,               // pour autoriser les cookies / headers auth
 }))
 app.use(express.json());
-
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -29,7 +28,10 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/incomes", incomeRoutes);
 app.use("/api/summary", summaryRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/receipts', receiptRoutes);
+app.use('/api/receipt', downloadRoutes);
+
+
+
 
 // Vérification de la connexion DB
 sequelize

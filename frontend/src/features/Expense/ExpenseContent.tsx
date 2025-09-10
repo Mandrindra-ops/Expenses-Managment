@@ -39,9 +39,44 @@ const ExpenseContent: React.FC = () => {
   const averageAmount = filteredExpenses.length > 0 ? totalAmount / filteredExpenses.length : 0;
   const withReceipt = filteredExpenses.filter(e => e.receipt).length;
 
-  const handleDownloadReceipt = (expenseId: number) => {
-    console.log(`Téléchargement du reçu pour la dépense ${expenseId}`);
-  };
+  const handleDownloadReceipt = async (expenseId: number) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/receipts/${expenseId}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors du téléchargement du reçu');
+    }
+
+    // Récupérer le fichier sous forme de blob
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // Créer un lien temporaire pour forcer le téléchargement
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Récupérer le nom du fichier depuis les headers ou fallback
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let fileName = `receipt-${expenseId}.pdf`;
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="(.+)"/);
+      if (match && match[1]) fileName = match[1];
+    }
+    a.download = fileName;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // Libérer l’URL temporaire
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Erreur lors du téléchargement:', error);
+  }
+};
+
 
   const handleAddExpense = (expenseData: any) => {
     console.log('Nouvelle dépense:', expenseData);
@@ -193,7 +228,7 @@ const ExpenseContent: React.FC = () => {
 
       {/* Modal pour ajouter une dépense */}
       {showAddExpense && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flou flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Dépense</h2>
             
@@ -230,7 +265,7 @@ const ExpenseContent: React.FC = () => {
 
       {/* Modal pour ajouter une catégorie */}
       {showAddCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-transparent flou flo bg-opacity-20 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Catégorie</h2>
             <div>

@@ -3,10 +3,10 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import DashboardContent from './features/Dashboard/DashboardContent';
 import Profil from './features/Profil/Profil';
-import Expense from './features/Expense/Expense';
 import HomePage from './pages/HomePage';
 import LoginForm from './components/forms/LoginForm';
 import IncomeContent from './features/Income/IncomeContent';
+import ExpenseContent from './features/Expense/ExpenseContent';
 
 const App: React.FC = () => {
   return (
@@ -19,7 +19,10 @@ const App: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardContent />} />
             <Route path="profile" element={<Profil />} />
-            <Route path="expenses" element={<Expense />} />
+            <Route path="expenses">
+              <Route index element={<ExpenseContent />} /> 
+              {/* <Route path="categories" element={<Profil />} /> */}
+            </Route>
             <Route path="incomes">
               <Route index element={<IncomeContent />} /> 
               <Route path="new" element={<IncomeContent mode="create" />} /> 

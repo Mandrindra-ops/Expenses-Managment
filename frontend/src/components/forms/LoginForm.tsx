@@ -1,8 +1,8 @@
 import { AiFillHome } from 'react-icons/ai';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccountStore } from '../../store';
 import { useForm, type SubmitHandler } from "react-hook-form"
-import { useAuth } from '../../hooks/useAuth';
 
 
 interface LoginFormProps {
@@ -17,7 +17,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
     const [isLoginMode, setIsLoginMode] = useState(isLoginModeInitial);
     const { handleSubmit, register, formState: { errors } } = useForm<AccountForm>()
     const navigate = useNavigate();
-    const { login, signup } = useAuth()
+    const { loginUser, registerUser } = useAccountStore()
 
     const toggleMode = (newMode: boolean) => {
         if (newMode) {
@@ -29,26 +29,26 @@ export default function LoginForm({ mode }: LoginFormProps) {
         };
     };
 
-    const onSubmit: SubmitHandler<AccountForm> = (data) => {
+    const onSubmit: SubmitHandler<AccountForm> = async (data) => {
         const { email, password } = data
 
         if (isLoginMode) {
             try {
-                login(email, password);
+                await loginUser(email, password);
+                navigate('/dashboard')
             } catch (err) {
                 if (err instanceof Error)
                     console.log({ message: err.message })
             }
-            return navigate('/dashboard')
         } else {
             try {
-                signup(email, password);
+                registerUser({ email, password });
+                navigate('/login')
             } catch (err) {
 
                 if (err instanceof Error)
                     console.log({ message: err.message })
             }
-            return navigate("/login")
         }
     }
 

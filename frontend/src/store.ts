@@ -1,64 +1,49 @@
-import { create } from "zustand";
-import { combine, persist } from "zustand/middleware";
-import { apiFetch } from "./utils/apiFetch"; // <-- ton helper pour fetch
-import api from "./utils/api";
+import { type StateCreator, create } from "zustand";
+import type { AuthStatus, RegisterUser, User } from "./types";
+import { devtools, persist } from "zustand/middleware";
+import { AuthService } from "./services";
 
-export interface Account {
-  id: string;
-  email: string;
+export interface AuthState {
+  status: AuthStatus;
+  token?: string;
+  user?: string | User;
+  loginUser: (email: string, password: string) => Promise<void>;
+  logoutUser: () => void;
+  registerUser: (data: RegisterUser) => Promise<void>;
 }
 
-export interface State {
-  token: string | null;
-  account: Account | null;
-}
-
-export const useAccountStore = create(
-  persist(
-    combine(
-      {
-        token: null as string | null,
-        account: null as Account | null,
-      },
-      (set, get) => ({
-        setAccount: (account: Account | null) => set({ account }),
-
-        clear: () => set({ token: null, account: null }),
-
-        // Vérifie l'utilisateur depuis l'API
-        authenticated: async () => {
-          try {
-            const me = await api<Account>("auth/me");
-            set({ account: me.data});
-          } catch {
-            set({ account: null });
-          }
-        },
-
-        // Login avec API, stocke le token et rafraîchit le compte
-        login: async (email: string, password: string) => {
-          try {
-            const { token } = await apiFetch<{ token: string }>("/auth/login", {
-              method: "POST",
-              json: { email, password },
-            });
-            set({token, account: get().account})
-          } catch {
-            set({ token: null, account: null });
-          }
-        },
-        signup : async (email: string, password:string) => {
-        try{
-
-        await apiFetch("/auth/signup",{method:"POST", json:{ email,password}})
-        } catch{
-            set({ token: null, account: null });
-            }
+const storeApi: StateCreator<AuthState> = (set) => ({
+  status: "unauthorized",
+  token: undefined,
+  user: undefined,
+  loginUser: async (email: string, password: string) => {
+    try {
+    const res = await AuthService.login(email, password);
+    const token = res.token
+    const user = res.username
+    console.log(res)
+      set({ status: "authorized", token , user });
+    } catch {
+      set({ status: "unauthorized", token: undefined, user: undefined });
+      console.error("Credenciales incorrectas");
     }
-      })
-    ),
-    {
-      name: "account-storage",
+  },
+   logoutUser: () => {
+    set({ status: "unauthorized", token: undefined, user: undefined });
+  },
+  registerUser: async ({email,password}:{email: string,password: string}) => {
+    try {
+        await AuthService.registerUser(email,password);
+
+    } catch (error) {
+        throw new Error(`${error}`);
     }
-  )
+  }
+});
+
+export const useAccountStore = create<AuthState>()(
+  devtools(
+    persist(
+        storeApi, { name: "auth-storage" }
+    ))
 );

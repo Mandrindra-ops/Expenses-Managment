@@ -6,7 +6,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   return (
     <nav className="flex items-center justify-between p-2 bg-white shadow-sm w-full">
       <div className="flex items-center gap-3 px-4">
-        <FaDollarSign className="h-6 w-6 text-green-600" />
+        <img src="./public/logo.svg" width={80} height={80} alt="Expense Tracker Logo" />
         <span className="text-xl font-bold text-gray-900">Expense Tracker</span>
       </div>
       <div className="flex gap-3">

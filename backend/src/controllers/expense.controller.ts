@@ -26,7 +26,6 @@ export const createExpense = async (req: Request, res: Response) => {
 
     const receipt = req.file?.path;
     const userId = req.user?.id!
-
     const data = {  amount,
       date,
       categoryId,

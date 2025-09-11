@@ -1,8 +1,8 @@
 import { AiFillHome } from 'react-icons/ai';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccountStore } from '../../store';
 import { useForm, type SubmitHandler } from "react-hook-form"
-import { useAuth } from '../../hooks/useAuth';
 
 
 interface LoginFormProps {
@@ -10,18 +10,15 @@ interface LoginFormProps {
 }
 type AccountForm = {
     email: string;
+    comfirmPasword: string;
     password: string;
 }
 export default function LoginForm({ mode }: LoginFormProps) {
     const isLoginModeInitial = mode === 'login';
     const [isLoginMode, setIsLoginMode] = useState(isLoginModeInitial);
-    const { handleSubmit, register, formState: { errors } } = useForm<AccountForm>()
+    const { handleSubmit, register, formState: { errors }, watch } = useForm<AccountForm>()
     const navigate = useNavigate();
-    const { login, signup } = useAuth()
-
-    // useEffect(() => {
-    //     setIsLoginMode(mode === 'login');
-    // }, [mode]);
+    const { loginUser, registerUser } = useAccountStore()
 
     const toggleMode = (newMode: boolean) => {
         if (newMode) {
@@ -32,27 +29,27 @@ export default function LoginForm({ mode }: LoginFormProps) {
             navigate('/signup')
         };
     };
-
-    const onSubmit: SubmitHandler<AccountForm> = (data) => {
+    const password = watch("password")
+    const onSubmit: SubmitHandler<AccountForm> = async (data) => {
         const { email, password } = data
 
         if (isLoginMode) {
             try {
-                login(email, password);
+                await loginUser(email, password);
+                navigate('/dashboard')
             } catch (err) {
                 if (err instanceof Error)
                     console.log({ message: err.message })
             }
-            return navigate('/dashboard')
         } else {
             try {
-                signup(email, password);
+                registerUser({ email, password });
+                navigate('/login')
             } catch (err) {
 
                 if (err instanceof Error)
                     console.log({ message: err.message })
             }
-            return navigate("/login")
         }
     }
 
@@ -114,6 +111,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
                     {errors.password && <p className='text-red-500 font-semibold text-md'>{errors.password.message}</p>}
                     {!isLoginMode && (
                         <input
+                            {...register("comfirmPasword", { validate: (value) => value == password || "Password not matches .." })}
                             type="password"
                             name="password2"
                             placeholder="Confirm Password"

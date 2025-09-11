@@ -28,7 +28,7 @@ export const changePassword = async (req: Request, res: Response) => {
     if (error.message === 'User not found') {
       return res.status(404).json({ message: error.message });
     }
-    if (error.message === 'Old password is incorrect') {
+    if (error.message.includes('Old passwords')) {
       return res.status(400).json({ message: error.message });
     }
     console.error(error);

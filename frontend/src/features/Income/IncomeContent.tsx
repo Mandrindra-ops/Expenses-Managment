@@ -1,5 +1,5 @@
 import { Edit2, Trash2, X , Check} from 'lucide-react';
-import { BanknoteArrowDown, ChartNoAxesCombined } from 'lucide-react';
+import { BanknoteArrowDown, ChartNoAxesCombined, CircleFadingPlus } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import api from "../../utils/api";
@@ -137,6 +137,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
     finally { setDeletingId(null); }
   };
 
+  const numberOfIncomes = incomes.length ;
+
   return (
     <div className="flex-1 overscroll-y-auto p-6 bg-[var(--color-bg)]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -167,6 +169,13 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
             </div>
           </div>
         ))}
+        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-5 flex items-center gap-4 border border-gray-300">
+            <div className={`w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-primary)]`}><CircleFadingPlus className="w-6 h-6 text-white"/></div>
+            <div>
+              <p className="text-sm text-[var(--color-text-sub)]">Number of Incomes</p>
+              <p className="font-semibold text-[var(--color-text)]">{ numberOfIncomes } </p>
+            </div>
+          </div>
       </div>
 
       {mode === "list" ? (

@@ -1,4 +1,4 @@
-import { Edit2, Trash2 , Check, X} from 'lucide-react';
+import { Edit2, Trash2 , Check, X, CirclePlus} from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api'; // <-- ton fichier axios
 
@@ -117,9 +117,9 @@ const CategoryContent: React.FC = () => {
         </div>
         <button
           onClick={() => setShowAddCategory(true)}
-          className="mt-4 md:mt-0 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition"
+          className="flex gap-2 mt-4 md:mt-0 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition"
         >
-          + New Category
+          <CirclePlus /> New Category
         </button>
       </div>
 

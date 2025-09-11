@@ -78,3 +78,18 @@
 =======
 >>>>>>> 366a30a (feat: cahnging the theme)
 }
+
+@keyframes borderGradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.animate-border-gradient {
+  background: linear-gradient(90deg, #10B981, #0f9922, #60a5fa, #0f9922);
+  background-size: 200% 200%;
+  animation: borderGradientMove 4s linear infinite;
+}

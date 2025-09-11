@@ -6,15 +6,18 @@ interface HeroSectionProps {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ totalTracked }) => {
   return (
-    <section className="w-full min-h-[60vh] py-10 md:py-14 bg-gradient-to-br from-neutral-50 to-neutral-100">
-      <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full min-h-[60vh] h-[80vh] py-10 md:py-14 bg-gradient-to-br from-neutral-50 to-neutral-100">
+      <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-center gap-3">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 leading-snug">
-            Track Your Expenses<br />Effortlessly
+            Track Your Expenses Effortlessly, Simplify Your Finances with Ease
           </h1>
           <p className="text-base text-gray-600">
             Take control of your finances with Expense Tracker, the easiest way to manage your
             expenses and achieve your financial goals.
+          </p>
+          <p className="text-base md:text-lg text-gray-600">
+            Manage your expenses efficiently, track your spending, and achieve your financial goals with minimal effort.
           </p>
         </div>
         <div className="relative">

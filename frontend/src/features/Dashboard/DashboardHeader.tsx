@@ -3,7 +3,7 @@ import type { User } from "../../types";
 
 interface DashboardHeaderProps {
   setSidebarOpen: (open: boolean) => void;
-  username?: User;
+  username?: string;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -110,12 +110,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 >
                     <div
                         onClick={() => setDarkMode(!darkMode)}
-                        className="w-16 h-8 flex items-center bg-[var(--color-bg-card)] rounded-full p-1 cursor-pointer shadow-md transition"
+                        className="w-12 h-6 flex items-center bg-[var(--color-bg-card)] rounded-full p-1 cursor-pointer shadow-md transition"
                     >
                         <div
+<<<<<<< HEAD
                         className={`w-6 h-6 rounded-full shadow-md transform transition-all duration-300 
                         ${darkMode ? "translate-x-8 bg-[var(--color-secondary)]" : "translate-x-0 bg-[var(--color-primary)]"}`}
                     />
+=======
+                        className={`w-4 h-4 rounded-full shadow-md transform transition-all duration-300 
+                        ${darkMode ? "translate-x-6 bg-[var(--color-secondary)]" : "translate-x-0 bg-[var(--color-primary)]"}`}
+                        />
+                    </div>
+>>>>>>> a07a219 ([ADD]: icon in the button create category, income, expense)
                 </div>
                 <p className="ml-3 text-sm text-[var(--color-text)]">
                     {darkMode ? "Dark Mode" : "Light Mode"}

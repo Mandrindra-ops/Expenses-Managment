@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { Download, Edit2, Trash2, X, Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
+=======
+import { Download, Edit2, Trash2 , X, Check, CirclePlus} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import api from '../../utils/api'; 
+>>>>>>> a07a219 ([ADD]: icon in the button create category, income, expense)
 
 interface Category {
   id: number;
@@ -184,9 +190,9 @@ const ExpenseContent: React.FC = () => {
         </div>
         <button
           onClick={() => setShowAddExpense(true)}
-          className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition mt-4 md:mt-0"
+          className="flex gap-2 justify-between px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition mt-4 md:mt-0"
         >
-          + New Expense
+          <CirclePlus /> New Expense
         </button>
       </div>
 

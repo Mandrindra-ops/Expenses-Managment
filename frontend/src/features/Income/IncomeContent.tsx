@@ -1,4 +1,4 @@
-import { Edit2, Trash2, X , Check} from 'lucide-react';
+import { Edit2, Trash2, X , Check, CirclePlus} from 'lucide-react';
 import { BanknoteArrowDown, ChartNoAxesCombined, CircleFadingPlus } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
@@ -149,8 +149,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
           <p className="text-[var(--color-text-sub)]">Manage your income sources</p>
         </div>
         {mode === "list" && (
-          <button onClick={handleOpenForm} className="mt-4 md:mt-0 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition">
-            + New Income
+          <button onClick={handleOpenForm} className="flex gap-2 mt-4 md:mt-0 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition">
+            <CirclePlus /> New Income
           </button>
         )}
       </div>

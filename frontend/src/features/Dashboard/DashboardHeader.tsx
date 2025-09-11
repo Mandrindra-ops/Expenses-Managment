@@ -106,18 +106,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </div>
 
             <div className="flex items-center gap-4">
-                <div 
+                <div
                     onClick={() => setDarkMode(!darkMode)}
                     className="w-16 h-8 flex items-center bg-[var(--color-bg-card)] rounded-full p-1 cursor-pointer border border-gray-300 shadow-md transition"
-                    >
+                >
                     <div
                         className={`w-6 h-6 rounded-full shadow-md transform transition-all duration-300 
                         ${darkMode ? "translate-x-8 bg-[var(--color-secondary)]" : "translate-x-0 bg-[var(--color-primary)]"}`}
                     />
-                    </div>
-                    <p className="ml-3 text-sm text-[var(--color-text)]">
+                </div>
+                <p className="ml-3 text-sm text-[var(--color-text)]">
                     {darkMode ? "Dark Mode" : "Light Mode"}
-                    </p>
+                </p>
 
                 <button className=" flex text-[var(--color-text-sub)] items-center focus:outline-none">
                     {/* cloche de notif */}
@@ -131,7 +131,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     </div>
                 </div>
             </div>
-            
+
         </header>
     );
 >>>>>>> 3167a21 (feat: cahnging the theme)

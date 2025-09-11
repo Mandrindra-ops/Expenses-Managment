@@ -106,7 +106,7 @@ const DashboardContent: React.FC = () => {
       {
         label: "Expenses (Ar)",
         data: ExpenseData.map((v) =>
-          parseFloat(v.value.reduce((a, b) => a + b, 0).toFixed(3))
+          parseFloat(v.value.reduce((a, b) => a + b).toFixed(3))
         ),
         borderWidth: 2,
         hoverOffset: 5,

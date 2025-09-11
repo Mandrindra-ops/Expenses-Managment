@@ -2,125 +2,135 @@ import { AiFillHome } from 'react-icons/ai';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccountStore } from '../../store';
-import { useForm, type SubmitHandler } from "react-hook-form"
-
+import { useForm, type SubmitHandler } from 'react-hook-form';
 
 interface LoginFormProps {
     mode: 'login' | 'signup';
 }
+
 type AccountForm = {
     email: string;
-    comfirmPasword: string;
     password: string;
-}
+    confirmPassword?: string;
+};
+
+const PASSWORD_RULE = {
+    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    message: 'Mot de passe trop faible',
+};
+
 export default function LoginForm({ mode }: LoginFormProps) {
-    const isLoginModeInitial = mode === 'login';
-    const [isLoginMode, setIsLoginMode] = useState(isLoginModeInitial);
-    const { handleSubmit, register, formState: { errors }, watch } = useForm<AccountForm>()
+    const [isLoginMode, setIsLoginMode] = useState(mode === 'login');
     const navigate = useNavigate();
-    const { loginUser, registerUser } = useAccountStore()
+    const { loginUser, registerUser } = useAccountStore();
 
-    const toggleMode = (newMode: boolean) => {
-        if (newMode) {
-            setIsLoginMode(true)
-            navigate('/login')
-        } else {
-            setIsLoginMode(false)
-            navigate('/signup')
-        };
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+        watch,
+    } = useForm<AccountForm>();
+
+    const password = watch('password');
+
+    const toggleMode = (target: 'login' | 'signup') => {
+        setIsLoginMode(target === 'login');
+        navigate(`/${target}`);
     };
-    const password = watch("password")
-    const onSubmit: SubmitHandler<AccountForm> = async (data) => {
-        const { email, password } = data
 
-        if (isLoginMode) {
-            try {
+    const onSubmit: SubmitHandler<AccountForm> = async ({ email, password }) => {
+        try {
+            if (isLoginMode) {
                 await loginUser(email, password);
-                navigate('/dashboard')
-            } catch (err) {
-                if (err instanceof Error)
-                    console.log({ message: err.message })
+                navigate('/dashboard');
+            } else {
+                await registerUser({ email, password });
+                navigate('/login');
             }
-        } else {
-            try {
-                registerUser({ email, password });
-                navigate('/login')
-            } catch (err) {
-
-                if (err instanceof Error)
-                    console.log({ message: err.message })
+        } catch (err) {
+            if (err instanceof Error) {
+                console.error({ message: err.message });
             }
         }
-    }
+    };
 
+    const inputBase =
+        'w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400 transition-all';
 
     return (
         <div className="relative flex w-full min-h-screen items-center justify-center bg-gradient-to-b from-green-300 to-green-200 px-4">
-            <a href="/" className='absolute p-2 rounded-full top-4 left-4'>
+            <a href="/" className="absolute p-2 rounded-full top-4 left-4">
                 <AiFillHome className="h-7 w-7 text-white" />
             </a>
 
             <div className="w-[430px] bg-white p-8 rounded-2xl shadow-lg">
-                <div className="flex justify-center mb-4">
-                    <h2 className="text-3xl font-semibold text-center text-[#008080]">
-                        {isLoginMode ? 'Login' : 'Sign up'}
-                    </h2>
-                </div>
+                <h2 className="mb-4 text-3xl font-semibold text-center text-[#008080]">
+                    {isLoginMode ? 'Login' : 'Sign up'}
+                </h2>
 
+                {/* Toggle buttons */}
                 <div className="relative flex h-12 mb-6 border border-gray-300 rounded-full overflow-hidden">
-                    <button
-                        onClick={() => toggleMode(true)}
-                        className={`w-1/2 text-lg font-medium transition-all z-10 ${isLoginMode ? 'text-white' : 'text-[#10B981] cursor-pointer'
-                            }`}
-                    >
-                        Log in
-                    </button>
-                    <button
-                        onClick={() => toggleMode(false)}
-                        className={`w-1/2 text-lg font-medium transition-all z-10 ${!isLoginMode ? 'text-white ' : 'text-[#10B981] cursor-pointer'
-                            }`}
-                    >
-                        Sign up
-                    </button>
+                    {(['login', 'signup'] as const).map((type) => (
+                        <button
+                            key={type}
+                            type="button"
+                            onClick={() => toggleMode(type)}
+                            className={`w-1/2 text-lg font-medium z-10 transition-all ${(type === 'login' ? isLoginMode : !isLoginMode)
+                                    ? 'text-white'
+                                    : 'text-[#10B981] cursor-pointer'
+                                }`}
+                        >
+                            {type === 'login' ? 'Log in' : 'Sign up'}
+                        </button>
+                    ))}
                     <div
-                        className={`absolute top-0 h-full w-1/2 rounded-full cursor-pointer bg-gradient-to-r from-[#008080] via-[#10B981] to-[#008080] transition-all duration-500 ease-in-out ${isLoginMode ? 'left-0' : 'left-1/2'
+                        className={`absolute top-0 h-full w-1/2 rounded-full bg-gradient-to-r from-[#008080] via-[#10B981] to-[#008080] transition-all duration-500 ease-in-out ${isLoginMode ? 'left-0' : 'left-1/2'
                             }`}
                     />
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex flex-col justify-between">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex flex-col">
                     <input
-                        {...register("email", { required: true, minLength: 8 })}
+                        {...register('email', {
+                            required: 'Email requis',
+                            pattern: { value: /^\S+@\S+\.\S+$/, message: 'Email invalide' },
+                        })}
                         type="email"
-                        name="email"
                         placeholder="Email Address"
-                        required
-                        className="w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400"
-
+                        className={inputBase}
                     />
+                    {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
 
-                    {errors.email && <p className='text-red-500 font-semibold text-md'>{errors.email.message}</p>}
                     <input
+                        {...register('password', {
+                            required: 'Mot de passe requis',
+                            pattern: PASSWORD_RULE,
+                        })}
                         type="password"
-                        {...register("password", { required: true, minLength: 6, pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, message: "mot de passe trop faible" } })}
-                        name="password"
                         placeholder="Password"
-                        required
-                        className="w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400 transition-all"
+                        className={inputBase}
                     />
-                    {errors.password && <p className='text-red-500 font-semibold text-md'>{errors.password.message}</p>}
+                    {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+
                     {!isLoginMode && (
-                        <input
-                            {...register("comfirmPasword", { validate: (value) => value == password || "Password not matches .." })}
-                            type="password"
-                            name="password2"
-                            placeholder="Confirm Password"
-                            required
-                            className="w-full p-3 border-b-2 border-gray-300 outline-none focus:border-cyan-500 placeholder-gray-400"
-                        />
+                        <>
+                            <input
+                                {...register('confirmPassword', {
+                                    validate: (v) => v === password || 'Les mots de passe ne correspondent pas',
+                                })}
+                                type="password"
+                                placeholder="Confirm Password"
+                                className={inputBase}
+                            />
+                            {errors.confirmPassword && (
+                                <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+                            )}
+                        </>
                     )}
+
                     <button
-                        className="w-full p-3 bg-gradient-to-r from-[#008080] via-[#10B981] to-[#008080] text-white rounded-full text-lg font-medium hover:opacity-90 transition-all cursor-pointer"
+                        type="submit"
+                        className="w-full p-3 bg-gradient-to-r from-[#008080] via-[#10B981] to-[#008080] text-white rounded-full text-lg font-medium hover:opacity-90 transition-all"
                     >
                         {isLoginMode ? 'Login' : 'Sign up'}
                     </button>

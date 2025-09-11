@@ -52,10 +52,10 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
               <p className="text-white/80">{userData.email}</p>
               <div className="mt-3 flex flex-wrap justify-center lg:justify-start gap-3">
                 <span className="px-3 py-1 bg-white/20 text-white text-sm rounded-full">
-                  Membre depuis {userData.memberSince}
+                  Member since {userData.memberSince}
                 </span>
                 <span className="px-3 py-1 bg-green-500/20 text-green-200 text-sm rounded-full">
-                  ✅ Actif
+                  ✅ Online
                 </span>
               </div>
             </div>
@@ -67,7 +67,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
           {/* Carte infos perso */}
           <div className="bg-[var(--color-bg-card)] rounded-xl shadow p-6">
             <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">
-              Informations personnelles
+              Personal information
             </h3>
             <div className="space-y-4">
               <div>
@@ -92,14 +92,14 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
           {/* Carte Balance restante */}
           <div className="bg-[var(--color-bg-card)] rounded-xl shadow p-6">
             <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">
-              Balance restante
+              Remaining Balance
             </h3>
             <div className="flex flex-col items-center justify-center py-6">
               <p className="text-sm text-[var(--color-text-sub)]">
-                Montant disponible
+                Amount available
               </p>
               <p className="text-3xl font-bold text-[var(--color-primary)]">
-                {userData.balance.toLocaleString()} €
+                {userData.balance.toLocaleString()} Ar
               </p>
             </div>
           </div>
@@ -108,11 +108,10 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
         {/* Carte Sécurité */}
         <div className="bg-[var(--color-bg-card)] rounded-xl shadow p-6">
           <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">
-            Sécurité
+            Security
           </h3>
           <p className="text-[var(--color-text-sub)] mb-4">
-            Pour protéger votre compte, changez régulièrement votre mot de
-            passe.
+            To protect your account, change your password regularly
           </p>
 
           {!showPasswordForm ? (
@@ -120,7 +119,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
               onClick={() => setShowPasswordForm(true)}
               className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white font-medium shadow hover:opacity-90 transition"
             >
-              🔒 Changer de mot de passe
+              🔒 Change password
             </button>
           ) : (
             <form onSubmit={handleSubmit(submitAction)} className="space-y-4">
@@ -131,7 +130,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
               )}
               <div>
                 <label className="block text-sm text-[var(--color-text-sub)] mb-1">
-                  Mot de passe actuel
+                  Current password
                 </label>
                 <input
                   {...register("old", { required: true })}
@@ -147,7 +146,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
 
               <div>
                 <label className="block text-sm text-[var(--color-text-sub)] mb-1">
-                  Nouveau mot de passe
+                  New password
                 </label>
                 <input
                   {...register("newPassword", {
@@ -172,7 +171,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
 
               <div>
                 <label className="block text-sm text-[var(--color-text-sub)] mb-1">
-                  Confirmer le nouveau mot de passe
+                  Confirm new password
                 </label>
                 <input
                   {...register("comfirmPasword", {
@@ -195,7 +194,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
                   type="submit"
                   className="flex-1 px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white font-medium shadow hover:opacity-90 transition"
                 >
-                  Mettre à jour
+                  Update
                 </button>
                 <button
                   disabled={!isLoading}
@@ -203,7 +202,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
                   onClick={() => setShowPasswordForm(false)}
                   className="flex-1 px-4 py-2 rounded-lg bg-gray-400 text-white font-medium shadow hover:opacity-90 transition"
                 >
-                  Annuler
+                  Cancel
                 </button>
               </div>
             </form>

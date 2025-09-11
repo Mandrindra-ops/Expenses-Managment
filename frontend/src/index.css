@@ -1,39 +1,42 @@
 @import "tailwindcss";
+
 /* Light Mode par défaut */
 :root {
-  --color-bg: #F9FAFB;
-  --color-bg-card: #F3F4F6;
-  --color-text: #111827;
-  --color-text-sub: #4B5563;
+  --color-bg: #F3F4F6;               /* légèrement plus contrasté */
+  --color-bg-card: #E5E7EB;          /* gris plus marqué */
+  --color-text: #0F172A;             /* noir bleuté, plus lisible */
+  --color-text-sub: #374151;         /* gris foncé au lieu de moyen */
 
-  --color-primary: #10B981;
-  --color-primary-teal: #008080;
-  --color-secondary: #2563EB;
-  --color-secondary-light: #3B82F6;
+  --color-primary: #059669;          /* vert émeraude foncé */
+  --color-primary-teal: #0D9488;     /* teal renforcé */
+  --color-secondary: #1D4ED8;        /* bleu foncé */
+  --color-secondary-light: #2563EB;  /* bleu plus saturé */
+
   --fx-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.34' numOctaves='4' stitchTiles='stitch'%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)' opacity='0.2'%3E%3C/rect%3E%3C/svg%3E");
-  --color-expense: #EF4444;
-  --color-income: #22C55E;
-  --color-alert: #F59E0B;
+
+  --color-expense: #DC2626;          /* rouge vif */
+  --color-income: #16A34A;           /* vert plus saturé */
+  --color-alert: #D97706;            /* orange profond */
 }
 
 /* Dark Mode amélioré */
 .dark {
-  --color-bg: #0F172A;
-  --color-bg-card: #1E293B;
-  --color-text: #F1F5F9;
-  --color-text-sub: #94A3B8;
+  --color-bg: #0A0F1E;               /* presque noir mais pas pur */
+  --color-bg-card: #1E293B;          /* bleu-gris foncé */
+  --color-text: #F9FAFB;             /* texte clair */
+  --color-text-sub: #CBD5E1;         /* gris clair pour contraste */
 
-  --color-primary: #34D399;
-  --color-primary-teal: #14B8A6;
-  --color-secondary: #3B82F6;
-  --color-secondary-light: #60A5FA;
+  --color-primary: #10B981;          /* vert jade */
+  --color-primary-teal: #14B8A6;     /* teal lumineux */
+  --color-secondary: #3B82F6;        /* bleu clair mais visible */
+  --color-secondary-light: #60A5FA;  /* bleu ciel vif */
 
-  --color-expense: #F87171;
-  --color-income: #4ADE80;
-  --color-alert: #FBBF24;
+  --color-expense: #F43F5E;          /* rouge rosé lumineux */
+  --color-income: #22C55E;           /* vert éclatant */
+  --color-alert: #FACC15;            /* jaune vif */
 }
 
-.flou{
-  background: linear-gradient(rgb(0,0,0,0.2),rgb(0,0,0,0.2));
-  backdrop-filter: blur(2px);
+.flou {
+  background: linear-gradient(rgb(0,0,0,0.35), rgb(0,0,0,0.35)); /* opacité augmentée */
+  backdrop-filter: blur(4px); /* flou renforcé */
 }

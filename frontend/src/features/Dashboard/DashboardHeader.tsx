@@ -85,7 +85,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </button>
         <div className="mr-5 flex items-center border rounded-3xl border-gray-300">
           <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-bold">
-            {username ? username.charAt(0).toUpperCase() : "U"}
+            {username ? username[0].toUpperCase() : "U"}
           </div>
         </div>
       </div>

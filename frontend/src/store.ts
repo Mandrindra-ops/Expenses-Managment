@@ -33,8 +33,8 @@ const storeApi: StateCreator<AuthState> = (set) => ({
   },
   registerUser: async ({email,password}:{email: string,password: string}) => {
     try {
-        await AuthService.registerUser(email,password);
-
+   
+      await AuthService.registerUser(email,password);
     } catch (error) {
         throw new Error(`${error}`);
     }

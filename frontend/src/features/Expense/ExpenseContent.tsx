@@ -1,92 +1,202 @@
-import { ReceiptText, Wallet, ChartPie, FileCheck } from 'lucide-react';
-import React, { useState } from 'react';
+import { Download, Edit2, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import api from '../../utils/api'; 
+
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+}
 
 interface Expense {
   id: number;
-  title: string;
   amount: number;
-  category: string;
   date: string;
-  receipt: boolean;
+  description: string;
+  type: 'OneTime' | 'Recurring';
+  receipt?: string;
+  startDate?: string;
+  endDate?: string;
+  categoryId: number;
 }
 
 const ExpenseContent: React.FC = () => {
   const [showAddExpense, setShowAddExpense] = useState(false);
-  const [showAddCategory, setShowAddCategory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-  const categories = ['Nourriture', 'Transport', 'Loisirs', 'Logement', 'Santé', 'Shopping'];
+  // Charger les catégories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get<Category[]>('/categories');
+        setCategories(res.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des catégories :", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  const expenses: Expense[] = [
-    { id: 1, title: 'Courses supermarché', amount: 85.40, category: 'Nourriture', date: '2023-10-12', receipt: true },
-    { id: 2, title: 'Essence voiture', amount: 60.00, category: 'Transport', date: '2023-10-11', receipt: false },
-    { id: 3, title: 'Cinéma', amount: 24.50, category: 'Loisirs', date: '2023-10-10', receipt: true },
-    { id: 4, title: 'Facture électricité', amount: 120.30, category: 'Logement', date: '2023-10-09', receipt: true },
-    { id: 5, title: 'Médicaments', amount: 35.20, category: 'Santé', date: '2023-10-08', receipt: false },
-    { id: 6, title: 'Nouvelle chemise', amount: 45.00, category: 'Shopping', date: '2023-10-07', receipt: true },
-  ];
+  // Charger les dépenses
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await api.get<Expense[]>('/expenses');
+        setExpenses(res.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des dépenses :", error);
+      }
+    };
+    fetchExpenses();
+  }, []);
 
+  // Filtrer les dépenses
   const filteredExpenses = expenses.filter(expense => {
-    const matchesCategory = selectedCategory === 'all' || expense.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === 'all' || expense.categoryId === Number(selectedCategory);
+
     const matchesDateRange =
       (!dateRange.start || expense.date >= dateRange.start) &&
       (!dateRange.end || expense.date <= dateRange.end);
+
     return matchesCategory && matchesDateRange;
   });
 
-  const totalAmount = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const averageAmount = filteredExpenses.length > 0 ? totalAmount / filteredExpenses.length : 0;
-  const withReceipt = filteredExpenses.filter(e => e.receipt).length;
-
-  const handleDownloadReceipt = async (expenseId: number) => {
+  // Fonction utilitaire pour télécharger le reçu
+const handleDownloadReceipt = async (expenseId: number) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/receipts/${expenseId}`, {
-      method: 'GET',
-    });
-
+    const response = await fetch(`/api/receipt/${expenseId}`);
     if (!response.ok) {
-      throw new Error('Erreur lors du téléchargement du reçu');
+      throw new Error("Erreur lors du téléchargement du reçu");
     }
 
-    // Récupérer le fichier sous forme de blob
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
 
-    // Créer un lien temporaire pour forcer le téléchargement
-    const a = document.createElement('a');
-    a.href = url;
-
-    // Récupérer le nom du fichier depuis les headers ou fallback
-    const contentDisposition = response.headers.get('Content-Disposition');
+    // Ici on laisse le backend donner le vrai nom du fichier
+    const disposition = response.headers.get("Content-Disposition");
     let fileName = `receipt-${expenseId}.pdf`;
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="(.+)"/);
-      if (match && match[1]) fileName = match[1];
+
+    if (disposition && disposition.includes("filename=")) {
+      fileName = disposition.split("filename=")[1].replace(/"/g, "");
     }
-    a.download = fileName;
 
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    // Libérer l’URL temporaire
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('Erreur lors du téléchargement:', error);
+    console.error("Erreur download:", error);
+    alert("Impossible de télécharger le reçu !");
+  }
+};
+
+  // Handle add
+  // State pour les champs du form
+const [type, setType] = useState<"OneTime" | "Recurring">("OneTime");
+
+const [newExpense, setNewExpense] = useState({
+  description: '',
+  amount: '',
+  date: '',
+  categoryId: '',
+  type: 'OneTime',
+});
+const [receiptFile, setReceiptFile] = useState<File | null>(null);
+
+// Fonction pour envoyer l’expense
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  // Création de FormData
+  const formData = new FormData();
+  formData.append('description', newExpense.description);
+  formData.append('amount', newExpense.amount);
+  formData.append('date', newExpense.date);
+  formData.append('categoryId', newExpense.categoryId);
+  formData.append('type', type);
+
+  if (type === 'Recurring') {
+    formData.append('startDate', newExpense.startDate || '');
+    formData.append('endDate', newExpense.endDate || '');
+  }
+
+  if (receiptFile) {
+    formData.append('receipt', receiptFile); // Multer attend ce champ
+  }
+
+  try {
+    await api.post("/expenses", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    window.location.reload();
+    setShowAddExpense(false); // Fermer le modal après succès
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add expense");
+  }
+};
+
+// handle edit and delete
+const [editingExpenseId, setEditingExpenseId] = useState<number | null>(null);
+const [editingExpenseData, setEditingExpenseData] = useState<Partial<Expense>>({});
+const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
+
+const handleUpdateExpense = async (id: number) => {
+  try {
+    const formData = new FormData();
+    formData.append('description', editingExpenseData.description || '');
+    formData.append('amount', String(editingExpenseData.amount || 0));
+    formData.append('date', editingExpenseData.date || '');
+    formData.append('categoryId', String(editingExpenseData.categoryId || 0));
+    formData.append('type', editingExpenseData.type || 'OneTime');
+    if (editingExpenseData.startDate) formData.append('startDate', editingExpenseData.startDate);
+    if (editingExpenseData.endDate) formData.append('endDate', editingExpenseData.endDate);
+    if (receiptFile) formData.append('receipt', receiptFile);
+
+    const response = await api.put(`/expenses/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    window.location.reload();
+    setEditingExpenseId(null);
+  } catch (err) {
+    console.error(err);
   }
 };
 
 
-  const handleAddExpense = (expenseData: any) => {
-    console.log('Nouvelle dépense:', expenseData);
-    setShowAddExpense(false);
-  };
+const handleDelete = async (id: number) => {
+  if (!id || isNaN(id)) {
+    console.error("ID de dépense invalide :", id);
+    setDeleteConfirmId(null);
+    return;
+  }
 
-  const handleAddCategory = (categoryName: string) => {
-    console.log('Nouvelle catégorie:', categoryName);
-    setShowAddCategory(false);
-  };
+  try {
+    const response = await api.delete(`/expenses/${id}`);
+
+    if (response.status >= 200 && response.status < 300) {
+      setExpenses((prev) => prev.filter((e) => e.id !== id));
+    } else {
+      console.error("Erreur lors de la suppression, status :", response.status);
+      alert("Impossible de supprimer cette dépense.");
+    }
+  } catch (err) {
+    console.error("Erreur lors de la suppression :", err);
+    alert("Erreur serveur : impossible de supprimer la dépense.");
+  } finally {
+    setDeleteConfirmId(null); // Toujours réinitialiser le mini-modal
+  }
+};
+
+
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-[var(--color-bg)]">
@@ -100,41 +210,8 @@ const ExpenseContent: React.FC = () => {
           onClick={() => setShowAddExpense(true)}
           className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:brightness-90 transition mt-4 md:mt-0"
         >
-          + Nouvelle Dépense
+          + New Expense
         </button>
-      </div>
-
-      {/* Cartes de statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4 flex items-center">
-          <div className="w-8 h-8 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
-            <Wallet className="text-white text-sm" />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-[var(--color-text-sub)]">Total Dépenses</p>
-            <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2)} €</p>
-          </div>
-        </div>
-
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4 flex items-center">
-          <div className="w-8 h-8 bg-[var(--color-secondary)] rounded-full flex items-center justify-center">
-            <ChartPie className="text-white text-sm" />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-[var(--color-text-sub)]">Dépense Moyenne</p>
-            <p className="text-xl font-bold text-[var(--color-text)]">{averageAmount.toFixed(2)} €</p>
-          </div>
-        </div>
-
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4 flex items-center">
-          <div className="w-8 h-8 bg-[var(--color-income)] rounded-full flex items-center justify-center">
-            <FileCheck className="text-white text-sm" />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-[var(--color-text-sub)]">Avec Reçu</p>
-            <p className="text-xl font-bold text-[var(--color-text)]">{withReceipt}</p>
-          </div>
-        </div>
       </div>
 
       {/* Filtres */}
@@ -149,7 +226,7 @@ const ExpenseContent: React.FC = () => {
             >
               <option value="all">Toutes les catégories</option>
               {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+                <option key={category.id} value={category.id}>{category.name}</option>
               ))}
             </select>
           </div>
@@ -174,15 +251,6 @@ const ExpenseContent: React.FC = () => {
             />
           </div>
         </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setShowAddCategory(true)}
-            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition"
-          >
-            + Nouvelle Catégorie
-          </button>
-        </div>
       </div>
 
       {/* Liste des dépenses */}
@@ -192,6 +260,7 @@ const ExpenseContent: React.FC = () => {
             <thead className="bg-[var(--color-bg)]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Description</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Catégorie</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Montant</th>
@@ -199,86 +268,332 @@ const ExpenseContent: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredExpenses.map(expense => (
-                <tr key={expense.id}>
-                  <td className="px-6 py-4 text-[var(--color-text)]">{expense.title}</td>
-                  <td className="px-6 py-4">
-                    <span className="px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
-                      {expense.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-[var(--color-text)]">{new Date(expense.date).toLocaleDateString('fr-FR')}</td>
-                  <td className="px-6 py-4 text-[var(--color-text)] font-medium ">-{expense.amount.toFixed(2)} €</td>
-                  <td className="px-6 py-4">
-                    {expense.receipt && (
-                      <button
-                        onClick={() => handleDownloadReceipt(expense.id)}
-                        className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
-                      >
-                        <ReceiptText className="w-4 h-4" /> Reçu
-                      </button>
+              {filteredExpenses.map((expense) => {
+                const category = categories.find((c) => c.id === expense.categoryId);
+                const isEditing = editingExpenseId === expense.id;
+
+                return (
+                  <tr key={expense.id}>
+                    {isEditing ? (
+                      <>
+                        {/* Description */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="text"
+                            value={editingExpenseData.description || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, description: e.target.value }))
+                            }
+                            className="border rounded p-1 w-full"
+                          />
+                        </td>
+
+                        {/* Type */}
+                        <td className="px-6 py-4">
+                          <select
+                            value={editingExpenseData.type || 'OneTime'}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, type: e.target.value as 'OneTime' | 'Recurring' }))
+                            }
+                            className="border rounded p-1 w-full"
+                          >
+                            <option value="OneTime">One Time</option>
+                            <option value="Recurring">Recurring</option>
+                          </select>
+                        </td>
+
+                        {/* Category */}
+                        <td className="px-6 py-4">
+                          <select
+                            value={editingExpenseData.categoryId || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, categoryId: Number(e.target.value) }))
+                            }
+                            className="border rounded p-1 w-full"
+                          >
+                            {categories.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+
+                        {/* Date */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="date"
+                            value={editingExpenseData.date?.slice(0, 10) || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, date: e.target.value }))
+                            }
+                            className="border rounded p-1 w-full"
+                          />
+                        </td>
+
+                        {/* Amount */}
+                        <td className="px-6 py-4">
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={editingExpenseData.amount || ''}
+                            onChange={(e) =>
+                              setEditingExpenseData((prev) => ({ ...prev, amount: Number(e.target.value) }))
+                            }
+                            className="border rounded p-1 w-full"
+                          />
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-6 py-4 flex gap-2">
+                          {editingExpenseData.type === 'Recurring' && (
+                            <>
+                              <input
+                                type="date"
+                                value={editingExpenseData.startDate || ''}
+                                onChange={(e) =>
+                                  setEditingExpenseData((prev) => ({ ...prev, startDate: e.target.value }))
+                                }
+                                className="border rounded p-1 w-full"
+                              />
+                              <input
+                                type="date"
+                                value={editingExpenseData.endDate || ''}
+                                onChange={(e) =>
+                                  setEditingExpenseData((prev) => ({ ...prev, endDate: e.target.value }))
+                                }
+                                className="border rounded p-1 w-full"
+                              />
+                            </>
+                          )}
+
+                          <input
+                            type="file"
+                            onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                            className="border rounded p-1 w-full"
+                          />
+
+                          <button
+                            onClick={() => handleUpdateExpense(expense.id)}
+                            className="px-2 py-1 bg-green-500 text-white rounded hover:brightness-90"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingExpenseId(null)}
+                            className="px-2 py-1 bg-gray-400 text-white rounded hover:brightness-90"
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        {/* Affichage normal */}
+                        <td className="px-6 py-4 text-[var(--color-text)]">{expense.description}</td>
+                        <td className="px-6 py-4 text-[var(--color-text)]">{expense.type}</td>
+                        <td className="px-6 py-4">
+                          <span className="px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">
+                            {category ? category.name : 'Inconnu'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-[var(--color-text)]">
+                          {new Date(expense.date).toLocaleDateString('fr-FR')}
+                        </td>
+                        <td className="px-6 py-4 text-[var(--color-text)] font-medium">
+                          {expense.amount.toFixed(2)} €
+                        </td>
+                        <td className="px-6 py-4 flex items-center gap-2">
+                            {/* Delete: si on est en mode confirmation on affiche Confirm/Cancel sans les bouttons ,
+                                sinon on affiche l'icône poubelle.*/}
+                            {deleteConfirmId === expense.id ? (
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(expense.id)}
+                                  className="px-2 py-1 bg-red-600 text-white rounded hover:brightness-90"
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="px-2 py-1 bg-gray-400 text-white rounded hover:brightness-90"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <div  className="px-6 py-4 flex items-center gap-2">
+                                {expense.receipt && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDownloadReceipt(expense.id)}
+                                    className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
+                                    aria-label={`Download receipt ${expense.id}`}
+                                  >
+                                    <Download className="w-4 h-4" /> Reçu
+                                  </button>
+                                )}
+                                <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingExpenseId(expense.id);
+                                  setEditingExpenseData({ ...expense });
+                                }}
+                                className="p-1 bg-blue-500 text-white rounded hover:brightness-90"
+                                aria-label={`Edit ${expense.id}`}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                  type="button"
+                                  onClick={() => setDeleteConfirmId(expense.id)}
+                                  className="p-1 bg-red-500 text-white rounded hover:brightness-90"
+                                  aria-label={`Delete ${expense.id}`}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                            )}
+                          </td>
+                      </>
                     )}
-                  </td>
-                </tr>
-              ))}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Modal pour ajouter une dépense */}
       {showAddExpense && (
-        <div className="fixed inset-0 flou flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Dépense</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-[var(--color-text-sub)] mb-1">Description</label>
-                <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Courses supermarché" />
-              </div>
-              <div>
-                <label className="block text-sm text-[var(--color-text-sub)] mb-1">Catégorie</label>
-                <select className="w-full p-2 border border-gray-300 rounded-lg">
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
+          <div className="fixed inset-0 flou flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Dépense</h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm mb-1">Description</label>
+                  <input 
+                    type="text"
+                    name="description"
+                    value={newExpense.description}
+                    onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-1">Catégorie</label>
+                  <select
+                    name="categoryId"
+                    value={newExpense.categoryId}
+                    onChange={(e) => setNewExpense({ ...newExpense, categoryId: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  >
+                    <option value="">-- Choisir une catégorie --</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-1">Montant (€)</label>
+                  <input 
+                    type="number"
+                    step="0.01"
+                    name="amount"
+                    value={newExpense.amount}
+                    onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-1">Date</label>
+                  <input 
+                    type="date"
+                    name="date"
+                    value={newExpense.date}
+                    onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+
+                <select
+                  name="type"
+                  value={type}
+                  onChange={(e) => setType(e.target.value as "OneTime" | "Recurring")}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="OneTime">One Time</option>
+                  <option value="Recurring">Recurring</option>
                 </select>
-              </div>
-              <div>
-                <label className="block text-sm text-[var(--color-text-sub)] mb-1">Montant (€)</label>
-                <input type="number" step="0.01" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-              </div>
-              <div>
-                <label className="block text-sm text-[var(--color-text-sub)] mb-1">Date</label>
-                <input type="date" className="w-full p-2 border border-gray-300 rounded-lg" />
-              </div>
-            </div>
 
-            <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setShowAddExpense(false)} className="px-4 py-2 bg-gray-300 rounded-lg">Annuler</button>
-              <button onClick={() => handleAddExpense({})} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg">Ajouter</button>
+                {type === "Recurring" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium">Start Date</label>
+                      <input
+                        type="date"
+                        name="startDate"
+                        value={newExpense.startDate || ''}
+                        onChange={(e) => setNewExpense({ ...newExpense, startDate: e.target.value })}
+                        required
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">End Date</label>
+                      <input
+                        type="date"
+                        name="endDate"
+                        value={newExpense.endDate || ''}
+                        onChange={(e) => setNewExpense({ ...newExpense, endDate: e.target.value })}
+                        required
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </>
+                )}
+
+
+                <div>
+                  <label className="block text-sm mb-1">Reçu (PDF/Image)</label>
+                  <input 
+                    type="file"
+                    name="receipt"
+                    onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 mt-6">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowAddExpense(false)} 
+                    className="px-4 py-2 bg-gray-300 rounded-lg"
+                  >
+                    Annuler
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg"
+                  >
+                    Ajouter
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal pour ajouter une catégorie */}
-      {showAddCategory && (
-        <div className="fixed inset-0 bg-transparent flou flo bg-opacity-20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Catégorie</h2>
-            <div>
-              <label className="block text-sm text-[var(--color-text-sub)] mb-1">Nom de la catégorie</label>
-              <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Abonnements" />
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <button onClick={() => setShowAddCategory(false)} className="px-4 py-2 bg-gray-300 rounded-lg">Annuler</button>
-              <button onClick={() => handleAddCategory('Nouvelle catégorie')} className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg">Créer</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

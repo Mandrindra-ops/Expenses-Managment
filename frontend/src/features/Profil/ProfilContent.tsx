@@ -99,7 +99,7 @@ const ProfilContent: React.FC<Props> = ({ profil }) => {
                 Montant disponible
               </p>
               <p className="text-3xl font-bold text-[var(--color-primary)]">
-                {userData.balance.toLocaleString()} €
+                {userData.balance.toLocaleString()} Ar
               </p>
             </div>
           </div>

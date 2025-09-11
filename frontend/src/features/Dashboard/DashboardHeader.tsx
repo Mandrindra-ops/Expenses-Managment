@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import type { User } from "../../types";
 
 interface DashboardHeaderProps {
   setSidebarOpen: (open: boolean) => void;
@@ -46,7 +45,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </svg>
         </button>
       </div>
-
+      <div className="flex flex-col transform -translate-x-1/3">
+        <p className="text-2xl self-start text-[var(--color-text)] font-bold">
+          Hi{" "}
+          <span className="text-[var(--color-primary)] capitalize">
+            {username},
+          </span>
+          <span className="text-md text-emerald-800 font-medium">
+            welcome back to your dashboard.
+          </span>
+        </p>
+        <p className="text-sm self-start text-[var(--color-text)] font-medium">
+          Here’s a quick overview of your data.
+        </p>
+      </div>
       <div className="flex items-center gap-4">
         <button
           onClick={() => setDarkMode(!darkMode)}

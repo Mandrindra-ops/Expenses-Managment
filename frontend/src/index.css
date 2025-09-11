@@ -49,11 +49,12 @@
 .money-particles .particle {
   position: absolute;
   bottom: -5rem;
-  font-size: 2.5rem; 
-  opacity: 0.9;
+  font-size: 3rem; /* a bit bigger for visibility */
+  opacity: 0.95;
   animation: floatUp linear infinite;
-  user-select: none; 
+  user-select: none;
   pointer-events: none;
+  white-space: pre;
 }
 
 @keyframes floatUp {

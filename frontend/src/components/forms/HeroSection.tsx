@@ -3,24 +3,36 @@ import { Link } from "react-router-dom";
 
 const moneySymbols = ["$", "€", "£", "¥", "₿"];
 
+const gradients = [
+  "linear-gradient(90deg, var(--color-primary), var(--color-secondary))",
+  "linear-gradient(90deg, var(--color-primary-teal), var(--color-secondary-light))",
+  "linear-gradient(90deg, #f59e0b, #ef4444)", 
+  "linear-gradient(90deg, #06b6d4, #3b82f6)", 
+  "linear-gradient(90deg, #10b981, #84cc16)",
+];
+
 const HeroSection: React.FC = () => {
   return (
     <section className="relative w-full min-h-[70vh] h-[80vh] flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 money-particles px-4 sm:px-6 lg:px-8">
       {/* Particules */}
+        {/* Particles */}
       {Array.from({ length: 30 }).map((_, i) => {
         const symbol = moneySymbols[Math.floor(Math.random() * moneySymbols.length)];
         const left = Math.random() * 100;
         const duration = 8 + Math.random() * 6;
         const delay = Math.random() * 5;
+        const gradient =
+          gradients[Math.floor(Math.random() * gradients.length)];
 
         return (
           <span
             key={i}
-            className="particle"
+            className="particle bg-clip-text text-transparent font-extrabold"
             style={{
               left: `${left}%`,
               animationDuration: `${duration}s`,
               animationDelay: `${delay}s`,
+              backgroundImage: gradient,
             }}
           >
             {symbol}

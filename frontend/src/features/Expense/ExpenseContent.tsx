@@ -1,4 +1,4 @@
-import { Edit2, ReceiptText, Trash2 } from 'lucide-react';
+import { Download, Edit2, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import api from '../../utils/api'; 
 
@@ -65,37 +65,37 @@ const ExpenseContent: React.FC = () => {
     return matchesCategory && matchesDateRange;
   });
 
-  const handleDownloadReceipt = async (expenseId: number) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/receipts/${expenseId}`, {
-        method: 'GET',
-      });
-      if (!response.ok) throw new Error('Erreur lors du téléchargement du reçu');
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let fileName = `receipt-${expenseId}.pdf`;
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="(.+)"/);
-        if (match && match[1]) fileName = match[1];
-      }
-      a.download = fileName;
-
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Erreur lors du téléchargement:', error);
+  // Fonction utilitaire pour télécharger le reçu
+const handleDownloadReceipt = async (expenseId: number) => {
+  try {
+    const response = await fetch(`/api/receipt/${expenseId}`);
+    if (!response.ok) {
+      throw new Error("Erreur lors du téléchargement du reçu");
     }
-  };
 
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    // Ici on laisse le backend donner le vrai nom du fichier
+    const disposition = response.headers.get("Content-Disposition");
+    let fileName = `receipt-${expenseId}.pdf`;
+
+    if (disposition && disposition.includes("filename=")) {
+      fileName = disposition.split("filename=")[1].replace(/"/g, "");
+    }
+
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Erreur download:", error);
+    alert("Impossible de télécharger le reçu !");
+  }
+};
 
   // Handle add
   // State pour les champs du form
@@ -432,7 +432,7 @@ const handleDelete = async (id: number) => {
                                     className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
                                     aria-label={`Download receipt ${expense.id}`}
                                   >
-                                    <ReceiptText className="w-4 h-4" /> Reçu
+                                    <Download className="w-4 h-4" /> Reçu
                                   </button>
                                 )}
                                 <button

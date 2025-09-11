@@ -143,13 +143,14 @@ const ExpenseContent: React.FC = () => {
       <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-4 mb-6 border border-[var(--color-secondary-light)]/20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">Catégorie</label>
+            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">Category</label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full p-2 border border-[var(--color-secondary-light)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
             >
-              <option value="all">All categories</option>
+              <option value="all">All category</option>
+
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
@@ -182,7 +183,9 @@ const ExpenseContent: React.FC = () => {
               <tr>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Description</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Type</th>
-                <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Catégorie</th>
+                
+                <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Category</th>
+
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Date</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Amount</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Actions</th>

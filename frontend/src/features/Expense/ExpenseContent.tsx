@@ -149,7 +149,11 @@ const ExpenseContent: React.FC = () => {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full p-2 border border-[var(--color-secondary-light)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
             >
+<<<<<<< HEAD
               <option value="all">All category</option>
+=======
+              <option value="all">All categories</option>
+>>>>>>> 20ac6f2 (feat: cahnging the theme (#58))
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
@@ -182,7 +186,11 @@ const ExpenseContent: React.FC = () => {
               <tr>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Description</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Type</th>
+<<<<<<< HEAD
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Category</th>
+=======
+                <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Catégorie</th>
+>>>>>>> 20ac6f2 (feat: cahnging the theme (#58))
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Date</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Amount</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Actions</th>

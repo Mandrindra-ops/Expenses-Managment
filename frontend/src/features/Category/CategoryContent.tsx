@@ -1,6 +1,6 @@
-import { Edit2, Trash2 , Check, X} from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import api from '../../utils/api'; // <-- ton fichier axios
+import { Edit2, Trash2, Check, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import api from "../../utils/api"; // <-- ton fichier axios
 
 interface Category {
   id: number;
@@ -17,7 +17,7 @@ const CategoryContent: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await api.get<Category[]>('/categories');
+        const res = await api.get<Category[]>("/categories");
         setCategories(res.data);
       } catch (error) {
         console.error("Erreur lors du chargement des catégories :", error);
@@ -50,7 +50,10 @@ const CategoryContent: React.FC = () => {
 
   // Édition / suppression
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<{ name?: string; description?: string }>({});
+  const [editForm, setEditForm] = useState<{
+    name?: string;
+    description?: string;
+  }>({});
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -82,7 +85,10 @@ const CategoryContent: React.FC = () => {
 
     try {
       setIsSaving(true);
-      const res = await api.put<Category>(`/categories/${id}`, { name, description });
+      const res = await api.put<Category>(`/categories/${id}`, {
+        name,
+        description,
+      });
       setCategories((prev) => prev.map((c) => (c.id === id ? res.data : c)));
       handleCancelEdit();
     } catch (err: any) {
@@ -112,8 +118,12 @@ const CategoryContent: React.FC = () => {
       {/* Head */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">My category</h1>
-          <p className="text-[var(--color-text-sub)]">Keep track of all the expense category</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">
+            My category
+          </h1>
+          <p className="text-[var(--color-text-sub)]">
+            Keep track of all the expense category
+          </p>
         </div>
         <button
           onClick={() => setShowAddCategory(true)}
@@ -142,7 +152,10 @@ const CategoryContent: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-[var(--color-secondary-light)]/20">
               {categories.map((category) => (
-                <tr key={category.id} className="hover:bg-[var(--color-secondary-light)]/5 transition">
+                <tr
+                  key={category.id}
+                  className="hover:bg-[var(--color-secondary-light)]/5 transition"
+                >
                   <td className="px-6 py-4">
                     {editingId === category.id ? (
                       <input
@@ -152,7 +165,9 @@ const CategoryContent: React.FC = () => {
                         className="w-full py-2 px-3 border border-[var(--color-secondary-light)] rounded-lg bg-[var(--color-bg)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-secondary)] focus:outline-none"
                       />
                     ) : (
-                      <span className="text-[var(--color-text)]">{category.name}</span>
+                      <span className="text-[var(--color-text)]">
+                        {category.name}
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -164,7 +179,9 @@ const CategoryContent: React.FC = () => {
                         className="w-full py-2 px-3 border border-[var(--color-secondary-light)] rounded-lg bg-[var(--color-bg)] text-[var(--color-text)] focus:ring-2 focus:ring-[var(--color-secondary)] focus:outline-none"
                       />
                     ) : (
-                      <span className="text-[var(--color-text-sub)]">{category.description}</span>
+                      <span className="text-[var(--color-text-sub)]">
+                        {category.description}
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -182,7 +199,7 @@ const CategoryContent: React.FC = () => {
                           disabled={isSaving}
                           className="px-2 py-1 bg-red-600 text-white text-sm rounded-lg hover:opacity-90"
                         >
-                          <X className="w-4 h-4"/>
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : deletingId === category.id ? (
@@ -191,13 +208,13 @@ const CategoryContent: React.FC = () => {
                           onClick={() => handleConfirmDelete(category.id)}
                           className="px-2 py-1 bg-[var(--color-expense)] text-sm text-white rounded-lg hover:opacity-90"
                         >
-                          <Check className="w-4 h-4"/>
+                          <Check className="w-4 h-4" />
                         </button>
                         <button
                           onClick={handleCancelDelete}
                           className="px-2 py-1 bg-gray-300  text-sm rounded-lg hover:opacity-90"
                         >
-                          <X className="w-4 h-4"/>
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
@@ -206,13 +223,13 @@ const CategoryContent: React.FC = () => {
                           onClick={() => handleEditClick(category)}
                           className="p-1 bg-[var(--color-primary)] text-white rounded text-sm hover:opacity-90"
                         >
-                          <Edit2 className="w-4 h-4"/>
+                          <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(category.id)}
                           className="p-1 bg-[var(--color-expense)] text-white rounded text-sm hover:opacity-90"
                         >
-                          <Trash2 className="w-4 h-4"/>
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     )}
@@ -228,9 +245,13 @@ const CategoryContent: React.FC = () => {
       {showAddCategory && (
         <div className="fixed inset-0 flou flex items-center justify-center z-50">
           <div className="bg-[var(--color-bg-card)] rounded-xl shadow-lg p-6 w-full max-w-md border border-[var(--color-secondary-light)]/30">
-            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Add category</h2>
+            <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">
+              Add category
+            </h2>
             <div className="mb-4">
-              <label className="block text-sm text-[var(--color-text-sub)] mb-1">Name</label>
+              <label className="block text-sm text-[var(--color-text-sub)] mb-1">
+                Name
+              </label>
               <input
                 type="text"
                 value={newName}
@@ -240,7 +261,9 @@ const CategoryContent: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm text-[var(--color-text-sub)] mb-1">Description</label>
+              <label className="block text-sm text-[var(--color-text-sub)] mb-1">
+                Description
+              </label>
               <input
                 type="text"
                 value={newDescription}
@@ -254,13 +277,13 @@ const CategoryContent: React.FC = () => {
                 onClick={() => setShowAddCategory(false)}
                 className="px-4 py-2 bg-[var(--color-alert)] text-white rounded-lg hover:opacity-90"
               >
-                <X className="w-4 h-4"/>
+                <X className="w-4 h-4" />
               </button>
               <button
                 onClick={handleAddCategory}
                 className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90"
               >
-                <Check className="w-4 h-4"/>
+                <Check className="w-4 h-4" />
               </button>
             </div>
           </div>

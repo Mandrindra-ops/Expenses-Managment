@@ -150,6 +150,7 @@ const ExpenseContent: React.FC = () => {
               className="w-full p-2 border border-[var(--color-secondary-light)] rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
             >
               <option value="all">All category</option>
+
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
@@ -182,7 +183,9 @@ const ExpenseContent: React.FC = () => {
               <tr>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Description</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Type</th>
+                
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Category</th>
+
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Date</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Amount</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-sub)] uppercase">Actions</th>

@@ -21,7 +21,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   }, [darkMode]);
 
   return (
-    <header className="flex items-center justify-between h-18 bg-[var(--color-bg-card)] border-b border-gray-200">
+    <header className="flex px-5 md:px-0 items-center justify-between h-18 bg-[var(--color-bg-card)] border-b border-gray-200">
       <div className="flex items-center">
         <button
           className="text-[var(--color-text-sub)] hover:text-[var(--color-text)] lg:hidden"
@@ -42,17 +42,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </svg>
         </button>
       </div>
-      <div className="flex flex-col flex-3 px-4">
+      <div className="flex md:flex-col flex-3 px-4">
         <p className="text-2xl self-start text-[var(--color-text)] font-bold">
           Hi{" "}
           <span className="text-[var(--color-primary)] capitalize">
             {username},
           </span>
-          <span className="text-md text-[var(--color-text-sub)] font-medium">
+          <span className="hidden md:inline text-md text-[var(--color-text-sub)] font-medium">
             welcome to your dashboard.
           </span>
         </p>
-        <p className="text-sm self-start text-[var(--color-text)] font-medium">
+        <p className="hidden md:inline text-sm self-start text-[var(--color-text)] font-medium">
           Here’s a quick overview of your data.
         </p>
       </div>
@@ -74,7 +74,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
         </div>
 
-        <p className="ml-3 text-sm text-[var(--color-text)]">
+        <p className="hidden md:inline ml-3 text-sm text-[var(--color-text)]">
           {darkMode ? "Dark Mode" : "Light Mode"}
         </p>
 

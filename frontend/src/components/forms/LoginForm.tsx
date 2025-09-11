@@ -10,12 +10,13 @@ interface LoginFormProps {
 }
 type AccountForm = {
     email: string;
+    comfirmPasword: string;
     password: string;
 }
 export default function LoginForm({ mode }: LoginFormProps) {
     const isLoginModeInitial = mode === 'login';
     const [isLoginMode, setIsLoginMode] = useState(isLoginModeInitial);
-    const { handleSubmit, register, formState: { errors } } = useForm<AccountForm>()
+    const { handleSubmit, register, formState: { errors }, watch } = useForm<AccountForm>()
     const navigate = useNavigate();
     const { loginUser, registerUser } = useAccountStore()
 
@@ -28,7 +29,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
             navigate('/signup')
         };
     };
-
+    const password = watch("password")
     const onSubmit: SubmitHandler<AccountForm> = async (data) => {
         const { email, password } = data
 
@@ -110,6 +111,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
                     {errors.password && <p className='text-red-500 font-semibold text-md'>{errors.password.message}</p>}
                     {!isLoginMode && (
                         <input
+                            {...register("comfirmPasword", { validate: (value) => value == password || "Password not matches .." })}
                             type="password"
                             name="password2"
                             placeholder="Confirm Password"

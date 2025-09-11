@@ -17,8 +17,8 @@ const app = express();
 
 // Middlewares globaux
 app.use(cors({
-  origin: "http://localhost:5173", // pas "*", mettre l'URL exacte
-  credentials: true,               // pour autoriser les cookies / headers auth
+  origin: "http://localhost:5173",
+  credentials: true,             
 }))
 app.use(express.json());
 // Routes

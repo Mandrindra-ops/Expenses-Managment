@@ -224,13 +224,16 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
         </div>
       ) : (
         /* Form */
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6">
+        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6 
+            w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl 
+            mx-auto 
+            border-2 border-[var(--color-primary)]">
           <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Add Income</h2>
           <form className="space-y-3" onSubmit={handleSubmit}>
             {["description","source","amount","date"].map((field) => (
               <div key={field}>
                 <label className="block text-sm text-[var(--color-text-sub)] mb-1 capitalize">{field==="amount"?"Amount (Ar)":field}</label>
-                <input type={field==="amount"?"number":field==="date"?"date":"text"} name={field} value={(formData as any)[field]} onChange={handleChange} className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)]" step={field==="amount"?"0.01":undefined} />
+                <input type={field==="amount"?"number":field==="date"?"date":"text"} name={field} value={(formData as any)[field]} onChange={handleChange} className="bg-white w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)]" step={field==="amount"?"0.01":undefined} />
               </div>
             ))}
             <div className="flex justify-end gap-2">

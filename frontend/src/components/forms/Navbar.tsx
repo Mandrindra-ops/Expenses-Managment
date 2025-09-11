@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { FaDollarSign } from 'react-icons/fa';
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = () => {

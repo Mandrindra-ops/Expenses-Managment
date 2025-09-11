@@ -97,7 +97,7 @@ export const updateExpense = async (req: Request, res: Response) => {
 
 export const deleteExpense = async (req: Request, res: Response) => {
   try {
-    const {id} = req.query
+    const id = Number(req.params.id); 
     const userId = req.user?.id
     expenseService.deleteExpense(Number(id),Number(userId))
     res.json({ message: "Expense deleted successfully" }).status(204);

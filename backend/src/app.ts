@@ -31,8 +31,6 @@ app.use('/api/user', userRoutes);
 app.use('/api/receipt', downloadRoutes);
 
 
-
-
 // Vérification de la connexion DB
 sequelize
   .authenticate()

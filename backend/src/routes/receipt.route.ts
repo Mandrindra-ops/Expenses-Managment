@@ -1,9 +1,8 @@
-import { Router } from 'express';
-import { downloadReceiptController } from '../controllers/receipt.controller';
+import express from "express";
+import { downloadReceiptController } from "../controllers/receipt.controller";
 
-const router = Router();
+const router = express.Router();
 
-// Route calls the controller
-router.get('/:expenseId', downloadReceiptController);
+router.get("/:expenseId", downloadReceiptController);
 
 export default router;

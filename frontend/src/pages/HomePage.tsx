@@ -15,7 +15,6 @@ const HomePage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-neutral-50">
-
             <div className=" w-full">
                 <Navbar />
             </div>

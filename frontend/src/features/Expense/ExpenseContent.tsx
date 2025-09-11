@@ -34,7 +34,7 @@ const ExpenseContent: React.FC = () => {
         const res = await api.get<Category[]>('/categories');
         setCategories(res.data);
       } catch (error) {
-        console.error("Erreur lors du chargement des catégories :", error);
+        console.error("Error loading categories:", error);
       }
     };
     fetchCategories();
@@ -47,7 +47,7 @@ const ExpenseContent: React.FC = () => {
         const res = await api.get<Expense[]>('/expenses');
         setExpenses(res.data);
       } catch (error) {
-        console.error("Erreur lors du chargement des dépenses :", error);
+        console.error("Error loading expenses:", error);
       }
     };
     fetchExpenses();
@@ -70,7 +70,7 @@ const handleDownloadReceipt = async (expenseId: number) => {
   try {
     const response = await fetch(`/api/receipt/${expenseId}`);
     if (!response.ok) {
-      throw new Error("Erreur lors du téléchargement du reçu");
+      throw new Error("Error downloading receipt");
     }
 
     const blob = await response.blob();
@@ -93,7 +93,7 @@ const handleDownloadReceipt = async (expenseId: number) => {
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Erreur download:", error);
-    alert("Impossible de télécharger le reçu !");
+    alert("Unable to download the receipt!");
   }
 };
 
@@ -174,7 +174,7 @@ const handleUpdateExpense = async (id: number) => {
 
 const handleDelete = async (id: number) => {
   if (!id || isNaN(id)) {
-    console.error("ID de dépense invalide :", id);
+    console.error("Invalid expense ID:", id);
     setDeleteConfirmId(null);
     return;
   }
@@ -185,12 +185,12 @@ const handleDelete = async (id: number) => {
     if (response.status >= 200 && response.status < 300) {
       setExpenses((prev) => prev.filter((e) => e.id !== id));
     } else {
-      console.error("Erreur lors de la suppression, status :", response.status);
-      alert("Impossible de supprimer cette dépense.");
+      console.error("Error during deletion, status:", response.status);
+      alert("Unable to delete this expense.");
     }
   } catch (err) {
-    console.error("Erreur lors de la suppression :", err);
-    alert("Erreur serveur : impossible de supprimer la dépense.");
+    console.error("Error during deletion:", err);
+    alert("Server error: unable to delete expense.");
   } finally {
     setDeleteConfirmId(null); // Toujours réinitialiser le mini-modal
   }
@@ -203,8 +203,8 @@ const handleDelete = async (id: number) => {
       {/* En-tête */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">Suivi des Dépenses</h1>
-          <p className="text-[var(--color-text-sub)]">Gérez et suivez toutes vos dépenses</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">Expense Tracking</h1>
+          <p className="text-[var(--color-text-sub)]">Manage and track all your expenses</p>
         </div>
         <button
           onClick={() => setShowAddExpense(true)}
@@ -224,7 +224,7 @@ const handleDelete = async (id: number) => {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)]"
             >
-              <option value="all">Toutes les catégories</option>
+              <option value="all">All categories</option>
               {categories.map(category => (
                 <option key={category.id} value={category.id}>{category.name}</option>
               ))}
@@ -232,7 +232,7 @@ const handleDelete = async (id: number) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">Date de début</label>
+            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">Start date</label>
             <input
               type="date"
               value={dateRange.start}
@@ -242,7 +242,7 @@ const handleDelete = async (id: number) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">Date de fin</label>
+            <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">End date</label>
             <input
               type="date"
               value={dateRange.end}
@@ -263,7 +263,7 @@ const handleDelete = async (id: number) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Catégorie</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Montant</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Amount</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Actions</th>
               </tr>
             </thead>
@@ -432,7 +432,7 @@ const handleDelete = async (id: number) => {
                                     className="flex items-center gap-2 px-3 py-1 bg-[var(--color-secondary)] text-white rounded-lg hover:brightness-90 transition text-sm"
                                     aria-label={`Download receipt ${expense.id}`}
                                   >
-                                    <Download className="w-4 h-4" /> Reçu
+                                    <Download className="w-4 h-4" /> Receipt
                                   </button>
                                 )}
                                 <button
@@ -470,7 +470,7 @@ const handleDelete = async (id: number) => {
       {showAddExpense && (
           <div className="fixed inset-0 flou flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">Nouvelle Dépense</h2>
+              <h2 className="text-xl font-bold text-[var(--color-text)] mb-4">New expense</h2>
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -486,7 +486,7 @@ const handleDelete = async (id: number) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-1">Catégorie</label>
+                  <label className="block text-sm mb-1">Categories</label>
                   <select
                     name="categoryId"
                     value={newExpense.categoryId}
@@ -494,7 +494,7 @@ const handleDelete = async (id: number) => {
                     className="w-full p-2 border border-gray-300 rounded-lg"
                     required
                   >
-                    <option value="">-- Choisir une catégorie --</option>
+                    <option value="">-- Select a category --</option>
                     {categories.map(category => (
                       <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
@@ -502,7 +502,7 @@ const handleDelete = async (id: number) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-1">Montant (€)</label>
+                  <label className="block text-sm mb-1">Amount (€)</label>
                   <input 
                     type="number"
                     step="0.01"
@@ -565,7 +565,7 @@ const handleDelete = async (id: number) => {
 
 
                 <div>
-                  <label className="block text-sm mb-1">Reçu (PDF/Image)</label>
+                  <label className="block text-sm mb-1">Receipt (PDF/Image)</label>
                   <input 
                     type="file"
                     name="receipt"
@@ -580,13 +580,13 @@ const handleDelete = async (id: number) => {
                     onClick={() => setShowAddExpense(false)} 
                     className="px-4 py-2 bg-gray-300 rounded-lg"
                   >
-                    Annuler
+                    Cancel
                   </button>
                   <button 
                     type="submit" 
                     className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg"
                   >
-                    Ajouter
+                    Add
                   </button>
                 </div>
               </form>

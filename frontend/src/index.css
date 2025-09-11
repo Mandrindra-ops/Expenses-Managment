@@ -40,3 +40,32 @@
   background: linear-gradient(rgb(0,0,0,0.35), rgb(0,0,0,0.35)); /* opacité augmentée */
   backdrop-filter: blur(4px); /* flou renforcé */
 }
+
+.money-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.money-particles .particle {
+  position: absolute;
+  bottom: -5rem;
+  font-size: 2.5rem; 
+  opacity: 0.9;
+  animation: floatUp linear infinite;
+  user-select: none; 
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(360deg);
+    opacity: 0;
+  }
+}

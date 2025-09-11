@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
             <div className=" w-full">
                 <Navbar />
             </div>
-            <HeroSection totalTracked="$134M" />
+            <HeroSection />
             <Footer />
         </div>
     );

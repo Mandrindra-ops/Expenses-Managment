@@ -42,7 +42,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </svg>
         </button>
       </div>
-      <div className="flex flex-col transform -translate-x-1/2">
+      <div className="flex flex-col flex-3 px-4">
         <p className="text-2xl self-start text-[var(--color-text)] font-bold">
           Hi{" "}
           <span className="text-[var(--color-primary)] capitalize">

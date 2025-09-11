@@ -1,5 +1,5 @@
-import { Edit2, Trash2, X , Check} from 'lucide-react';
-import { BanknoteArrowDown, ChartNoAxesCombined } from 'lucide-react';
+import { Edit2, Trash2, X , Check, CirclePlus} from 'lucide-react';
+import { BanknoteArrowDown, ChartNoAxesCombined, CircleFadingPlus } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import api from "../../utils/api";
@@ -137,6 +137,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
     finally { setDeletingId(null); }
   };
 
+  const numberOfIncomes = incomes.length ;
+
   return (
     <div className="flex-1 overscroll-y-auto p-6 bg-[var(--color-bg)]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -147,8 +149,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
           <p className="text-[var(--color-text-sub)]">Manage your income sources</p>
         </div>
         {mode === "list" && (
-          <button onClick={handleOpenForm} className="mt-4 md:mt-0 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition">
-            + New Income
+          <button onClick={handleOpenForm} className="flex gap-2 mt-4 md:mt-0 px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:opacity-90 transition">
+            <CirclePlus /> New Income
           </button>
         )}
       </div>
@@ -167,6 +169,13 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
             </div>
           </div>
         ))}
+        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-5 flex items-center gap-4 border border-gray-300">
+            <div className={`w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-primary)]`}><CircleFadingPlus className="w-6 h-6 text-white"/></div>
+            <div>
+              <p className="text-sm text-[var(--color-text-sub)]">Number of Incomes</p>
+              <p className="font-semibold text-[var(--color-text)]">{ numberOfIncomes } </p>
+            </div>
+          </div>
       </div>
 
       {mode === "list" ? (
@@ -215,13 +224,16 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
         </div>
       ) : (
         /* Form */
-        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6">
+        <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6 
+            w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl 
+            mx-auto 
+            border-2 border-[var(--color-primary)]">
           <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">Add Income</h2>
           <form className="space-y-3" onSubmit={handleSubmit}>
             {["description","source","amount","date"].map((field) => (
               <div key={field}>
                 <label className="block text-sm text-[var(--color-text-sub)] mb-1 capitalize">{field==="amount"?"Amount (Ar)":field}</label>
-                <input type={field==="amount"?"number":field==="date"?"date":"text"} name={field} value={(formData as any)[field]} onChange={handleChange} className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)]" step={field==="amount"?"0.01":undefined} />
+                <input type={field==="amount"?"number":field==="date"?"date":"text"} name={field} value={(formData as any)[field]} onChange={handleChange} className="bg-white w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)]" step={field==="amount"?"0.01":undefined} />
               </div>
             ))}
             <div className="flex justify-end gap-2">

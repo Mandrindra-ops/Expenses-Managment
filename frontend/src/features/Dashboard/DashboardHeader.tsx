@@ -45,14 +45,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </svg>
         </button>
       </div>
-      <div className="flex flex-col transform -translate-x-1/3">
+      <div className="flex flex-col transform -translate-x-1/2">
         <p className="text-2xl self-start text-[var(--color-text)] font-bold">
           Hi{" "}
           <span className="text-[var(--color-primary)] capitalize">
             {username},
           </span>
-          <span className="text-md text-emerald-800 font-medium">
-            welcome back to your dashboard.
+          <span className="text-md text-[var(--color-text-sub)] font-medium">
+            welcome to your dashboard.
           </span>
         </p>
         <p className="text-sm self-start text-[var(--color-text)] font-medium">

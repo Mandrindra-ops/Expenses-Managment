@@ -102,7 +102,6 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
   };
 
   // Handling edit
-  // transforme "2025-09-05T..." ou "2025-09-05" -> "YYYY-MM-DD" pour <input type="date">
   const formatDateForInput = (d?: string) => {
     if (!d) return "";
     const date = new Date(d);
@@ -117,7 +116,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
     setEditForm({
       description: income.description,
       source: income.source,
-      amount: String(income.amount), // keep as string to allow partial edits
+      amount: String(income.amount), 
       date: formatDateForInput(income.date),
     });
   };
@@ -134,22 +133,22 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
 
   const handleSaveEdit = async (id: number) => {
     if (!editingId) return;
-    // validation simple
+    
     const desc = (editForm.description ?? "").trim();
     const src = (editForm.source ?? "").trim();
     const amt = parseFloat(String(editForm.amount ?? "0"));
     const dateStr = editForm.date;
 
     if (!desc || !src || !dateStr || isNaN(amt) || amt <= 0) {
-      alert("Please fill all fields correctly."); // remplace par un toast si tu veux
+      alert("Please fill all fields correctly."); 
       return;
-    }
+    } // need test and delete after that the alert to improve the design
 
     const payload = {
       description: desc,
       source: src,
       amount: amt,
-      date: dateStr, // format YYYY-MM-DD
+      date: dateStr, 
     };
 
     try {
@@ -157,8 +156,6 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
       const res = await api.put<Income>(`/incomes/${id}`, payload);
       const updated = res.data;
 
-      // Mise à jour locale : si date toujours dans le mois courant => remplacer,
-      // sinon supprimer de la liste (car ton écran montre uniquement mois courant)
       const d = new Date(updated.date);
       const now = new Date();
       if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
@@ -171,18 +168,16 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
       setEditForm({});
     } catch (err: any) {
       console.error("Update error:", err.response ?? err);
-      // Afficher erreur utilisateur
+
       const msg = err?.response?.data?.message || "Update failed";
-      alert(msg); // remplace par toast
+      alert(msg); // need test and delete after that the alert to improve the design
     } finally {
       setIsSaving(false);
     }
   };
 
-   // Handling delete
     const handleStartDelete = (id: number) => {
       setDeletingId(id);
-      // Si cet élément était en édition, annule l'édition
       if (editingId === id) handleCancelEdit();
     };
 
@@ -197,7 +192,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
       } catch (err: any) {
         console.error("Delete error:", err.response ?? err);
         const msg = err?.response?.data?.message || "Suppression échouée";
-        alert(msg);
+        alert(msg); // need test and delete after that the alert to improve the design
       } finally {
         setDeletingId(null);
       }
@@ -209,10 +204,10 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">
-            Revenus du mois de{" "}
-            {new Date().toLocaleString("fr-FR", { month: "long", year: "numeric" })}
+            Incomes for{" "}
+            {new Date().toLocaleString("en-US", { month: "long", year: "numeric" })}
           </h1>
-          <p className="text-[var(--color-text-sub)]">Gérez et suivez toutes vos sources de revenus</p>
+          <p className="text-[var(--color-text-sub)]">Manage and track all your sources of income</p>
         </div>
 
         {mode === "list" && (
@@ -220,7 +215,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
             onClick={handleOpenForm}
             className="px-4 py-2 bg-[var(--color-income)] text-white rounded-lg hover:brightness-90 transition mt-4 md:mt-0"
           >
-            + Nouveau Revenu
+            + New Income
           </button>
         )}
       </div>
@@ -233,8 +228,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                   <span className="text-white text-sm"><BanknoteArrowDown /></span>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-[var(--color-text-sub)]">Total Revenus</p>
-                  <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2)} Ar</p>
+                  <p className="text-sm font-medium text-[var(--color-text-sub)]">Total Income</p>
+                  <p className="text-xl font-bold text-[var(--color-text)]">{totalAmount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Ar</p>
                 </div>
               </div>
             </div>
@@ -244,8 +239,8 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                   <span className="text-white text-sm"><ChartNoAxesCombined /></span>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-[var(--color-text-sub)]">Moyenne Mensuelle</p>
-                  <p className="text-xl font-bold text-[var(--color-text)]">{monthlyAverage.toFixed(2)} Ar</p>
+                  <p className="text-sm font-medium text-[var(--color-text-sub)]">Monthly Average</p>
+                  <p className="text-xl font-bold text-[var(--color-text)]">{monthlyAverage.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} Ar</p>
                 </div>
               </div>
             </div>
@@ -261,7 +256,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Description</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Source</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Montant</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Amount</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-sub)] uppercase">Settings</th>
                 </tr>
               </thead>
@@ -319,7 +314,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                           className="w-full p-2 border rounded"
                         />
                       ) : (
-                        `${income.amount} Ar`
+                        `${income.amount.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Ar`
                       )}
                     </td>
 
@@ -383,7 +378,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
       ) : (
         /* FORM CREATE */
         <div className="bg-[var(--color-bg-card)] rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4">Ajouter un revenu</h2>
+          <h2 className="text-xl font-bold mb-4">Add income</h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
@@ -395,7 +390,7 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                 value={formData.description}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-lg"
-                placeholder="Ex: Salaire octobre"
+                placeholder="Ex: October salary"
               />
             </div>
             <div>
@@ -408,12 +403,12 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                 value={formData.source}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-lg"
-                placeholder="Ex: Salaire"
+                placeholder="Ex: Salary"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--color-text-sub)] mb-1">
-                Montant (Ar)
+                Amount (Ar)
               </label>
               <input
                 type="number"
@@ -444,13 +439,13 @@ const IncomeContent: React.FC<IncomeContentProps> = ({ mode: initialMode }) => {
                 onClick={handleCancelForm} 
                 className="px-4 py-2 bg-gray-300 rounded"
               >
-                Annuler
+                Cancel
               </button>
               <button 
                 type="submit" 
                 className="px-4 py-2 bg-[var(--color-income)] text-white rounded"
               >
-                Enregistrer
+                Save
               </button>
             </div>
           </form>

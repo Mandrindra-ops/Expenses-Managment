@@ -62,7 +62,7 @@ export class SummaryService {
     return {
       period: { start, end },
       totalExpenses: totalExpenses || 0,
-      totalIncome: totalIncome || 0,
+      totalIncomes: totalIncome || 0,
       balance,
       expensesByCategory: expensesByCategory.map((expense) => ({
         category: expense.categoryId,
@@ -92,12 +92,14 @@ export class SummaryService {
 
   static async getAlerts(userId: string) {
     const summary = await this.getMonthlySummary(userId);
-    if (summary.totalExpenses > summary.totalIncome) {
+    if (summary.totalExpenses > summary.totalIncomes) {
       return {
         alert: true,
         message: `You've exceeded your monthly budget by $${
-          summary.totalExpenses - summary.totalIncome
+          summary.totalExpenses - summary.totalIncomes
         }`,
+        totalExpenses : `${summary.totalExpenses}`,
+        totalIncomes : `${summary.totalIncomes}`,
       };
     }
     return { alert: false };

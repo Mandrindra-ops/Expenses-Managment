@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { User } from "../../types";
 import { Bell } from "lucide-react";
 import api from "../../utils/api"
@@ -9,7 +9,6 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ setSidebarOpen, username }) => {
-    const [darkMode, setDarkMode] = useState<boolean>(false);
     const [darkMode, setDarkMode] = useState<boolean>(false);
     const [notifications, setNotifications] = useState<{ message: string }[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -24,23 +23,29 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ setSidebarOpen, usern
     }
   }, [darkMode]);
 
+    const lastAlertDiffRef = useRef<number | null>(null);
+
   useEffect(() => {
         const fetchAlerts = async () => {
-            try {
-                const res = await api.get("/alerts");
-                const alertData = res.data;
-                if (alertData.alert) {
+
+            const res = await api.get("/summary/alerts");
+            const alertData = res.data;
+
+            if (alertData.alert) {
+                const currentDiff = alertData.totalExpenses - alertData.totalIncomes;
+
+                if (lastAlertDiffRef.current === null || currentDiff !== lastAlertDiffRef.current) {
                     setNotifications(prev => [...prev, { message: alertData.message }]);
                     setUnreadCount(prev => prev + 1);
+                    lastAlertDiffRef.current = currentDiff;
                 }
-            } catch (err) {
-                console.error(err);
+                
             }
         };
 
         fetchAlerts();
 
-        const interval = setInterval(fetchAlerts, 10000); 
+        const interval = setInterval(fetchAlerts, 10000);
         return () => clearInterval(interval);
     }, []);
 

@@ -27,7 +27,7 @@ export const getBudgetAlerts = async (req: Request, res: Response) => {
     res.json(alerts);
   } catch (error) {
     if (error instanceof Error) {
-      console.trace(error.message);
+      console.error(error.message);
       res.status(500).json({ message: error.message });
     }
   }

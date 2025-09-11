@@ -49,7 +49,6 @@ export const getExpenses = async (req: Request, res: Response) => {
     const { startDate, endDate, categoryId, type } = req.query;
     const userId = req.user?.id
     const expenses = await expenseService.getExpenses(startDate as string | undefined, endDate  as string | undefined, categoryId  as number | undefined, type as string | undefined, Number(userId))
-    console.log(expenses)
     res.json(expenses);
   } catch (error: any) {
     console.error(error);

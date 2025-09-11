@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccountStore } from '../../store';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import { Eye, EyeOff } from 'lucide-react'; // Importer les icônes de Lucide React
 
 interface LoginFormProps {
     mode: 'login' | 'signup';
@@ -21,6 +22,8 @@ const PASSWORD_RULE = {
 
 export default function LoginForm({ mode }: LoginFormProps) {
     const [isLoginMode, setIsLoginMode] = useState(mode === 'login');
+    const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // État pour afficher/masquer le mot de passe de confirmation
     const navigate = useNavigate();
     const { loginUser, registerUser } = useAccountStore();
 
@@ -36,6 +39,16 @@ export default function LoginForm({ mode }: LoginFormProps) {
     const toggleMode = (target: 'login' | 'signup') => {
         setIsLoginMode(target === 'login');
         navigate(`/${target}`);
+    };
+
+    const togglePasswordVisibility = () => {
+        console.log('Toggling password visibility:', !showPassword); // Pour débogage
+        setShowPassword(!showPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        console.log('Toggling confirm password visibility:', !showConfirmPassword); // Pour débogage
+        setShowConfirmPassword(!showConfirmPassword);
     };
 
     const onSubmit: SubmitHandler<AccountForm> = async ({ email, password }) => {
@@ -101,27 +114,53 @@ export default function LoginForm({ mode }: LoginFormProps) {
                     />
                     {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
 
-                    <input
-                        {...register('password', {
-                            required: 'Mot de passe requis',
-                            pattern: PASSWORD_RULE,
-                        })}
-                        type="password"
-                        placeholder="Password"
-                        className={inputBase}
-                    />
+                    <div className="relative">
+                        <input
+                            {...register('password', {
+                                required: 'Mot de passe requis',
+                                pattern: PASSWORD_RULE,
+                            })}
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Password"
+                            className={`${inputBase} pr-12`} // Espace pour l'icône
+                        />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 z-50"
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-5 w-5 text-black" />
+                            ) : (
+                                <Eye className="h-5 w-5 text-black" />
+                            )}
+                        </button>
+                    </div>
                     {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 
                     {!isLoginMode && (
                         <>
-                            <input
-                                {...register('confirmPassword', {
-                                    validate: (v) => v === password || 'Les mots de passe ne correspondent pas',
-                                })}
-                                type="password"
-                                placeholder="Confirm Password"
-                                className={inputBase}
-                            />
+                            <div className="relative">
+                                <input
+                                    {...register('confirmPassword', {
+                                        validate: (v) => v === password || 'Les mots de passe ne correspondent pas',
+                                    })}
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    placeholder="Confirm Password"
+                                    className={`${inputBase} pr-12`} // Espace pour l'icône
+                                />
+                                <button
+                                    type="button"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 z-50"
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOff className="h-5 w-5 text-black" />
+                                    ) : (
+                                        <Eye className="h-5 w-5 text-black" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.confirmPassword && (
                                 <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
                             )}

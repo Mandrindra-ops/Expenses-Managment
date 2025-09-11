@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as expenseService from '../services/expense.service';
+import  { SummaryService } from '../services/summary.service';
+
 
 interface CreateExpenseBody {
   amount: number;
@@ -33,10 +35,13 @@ export const createExpense = async (req: Request, res: Response) => {
       userId,
       description,
       startDate,
-      endDate,receipt}
-        const expense = await expenseService.createExpense(data)
+      endDate,receipt
+    }
 
-    res.status(201).json(expense);
+    const expense = await expenseService.createExpense(data);
+    const alerts = await SummaryService.getAlerts(String(userId));
+
+    res.status(201).json({ expense, alerts });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -84,10 +89,12 @@ export const updateExpense = async (req: Request, res: Response) => {
         startDate,
         endDate,
       } as Partial<CreateExpenseBody>
-      if (req.file?.path) newData.receipt = req.file.path;
-      const expense = await expenseService.updateExpense(Number(id) ,Number(userId) ,newData)
+    if (req.file?.path) newData.receipt = req.file.path;
+    const expense = await expenseService.updateExpense(Number(id) ,Number(userId) ,newData)
 
-    res.json(expense);
+    const alerts = await SummaryService.getAlerts(String(userId));
+
+    res.status(201).json({ expense, alerts });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -99,7 +106,9 @@ export const deleteExpense = async (req: Request, res: Response) => {
     const id = Number(req.params.id); 
     const userId = req.user?.id
     expenseService.deleteExpense(Number(id),Number(userId))
-    res.json({ message: "Expense deleted successfully" }).status(204);
+    const alerts = await SummaryService.getAlerts(String(userId));
+
+    res.status(200).json({ message: "Expense deleted successfully", alerts });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

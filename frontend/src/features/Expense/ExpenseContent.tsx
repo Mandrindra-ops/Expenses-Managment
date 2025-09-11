@@ -232,7 +232,7 @@ const ExpenseContent: React.FC = () => {
                           <span className="px-2 py-1 text-xs font-medium bg-[var(--color-primary)] text-white rounded-full">{category?.name || 'Inconnu'}</span>
                         </td>
                         <td className="px-6 py-4 text-[var(--color-text)]">{new Date(expense.date).toLocaleDateString('fr-FR')}</td>
-                        <td className="px-6 py-4 text-[var(--color-text)] font-medium">{expense.amount.toFixed(2)} €</td>
+                        <td className="px-6 py-4 text-[var(--color-text)] font-medium">{expense.amount.toFixed(2)} Ar</td>
                         <td className="px-6 py-4 flex items-center gap-2">
                           {deleteConfirmId === expense.id ? (
                             <>

@@ -15,7 +15,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ sidebarOpen, setSid
     const logOut = useAccountStore(state => state.logoutUser)
     const navigationItems = [
         { name: 'Dashboard', icon: ChartNoAxesCombined, href: '/dashboard' },
-        { name: 'Categories', icon: Boxes, href: '/dashboard/categories' },
+        { name: 'Category', icon: Boxes, href: '/dashboard/categories' },
         { name: 'Expenses', icon: CircleDollarSign, href: '/dashboard/expenses' },
         { name: 'Incomes', icon: BanknoteArrowUp, href: '/dashboard/incomes' },
     ];

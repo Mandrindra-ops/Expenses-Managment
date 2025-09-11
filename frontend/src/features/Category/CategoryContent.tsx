@@ -112,8 +112,8 @@ const CategoryContent: React.FC = () => {
       {/* Head */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">My categories</h1>
-          <p className="text-[var(--color-text-sub)]">Keep track of all the expense categories</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">My category</h1>
+          <p className="text-[var(--color-text-sub)]">Keep track of all the expense category</p>
         </div>
         <button
           onClick={() => setShowAddCategory(true)}

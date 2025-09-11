@@ -65,7 +65,7 @@ const DashboardContent: React.FC = () => {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {/* Graphique des dépenses (placeholder) */}
                 <div className="p-6 bg-[var(--color-bg-card)] rounded-lg shadow">
-                    <h2 className="text-lg font-medium text-[var(--color-text)] mb-4">Évolution des dépenses</h2>
+                    <h2 className="text-lg font-medium text-[var(--color-text)] mb-4">Expenses evolution</h2>
                     <div className="flex items-center justify-center h-64 bg-[var(--color-bg)] rounded-lg">
                         <Doughnut key="doughnut" data={DoughnutData} />
                     </div>
@@ -73,7 +73,7 @@ const DashboardContent: React.FC = () => {
 
                 {/* Dépenses par catégorie (placeholder) */}
                 <div className="p-6 bg-[var(--color-bg-card)] rounded-lg shadow">
-                    <h2 className="text-lg font-medium text-[var(--color-text)] mb-4">Répartition par catégorie</h2>
+                    <h2 className="text-lg font-medium text-[var(--color-text)] mb-4">Category Distribution</h2>
                     <div className="flex items-center justify-center h-64 bg-[var(--color-bg)] rounded-lg">
                         <Bar key="bar" data={BarData} />
                     </div>
@@ -82,7 +82,7 @@ const DashboardContent: React.FC = () => {
 
             {/* Dépenses récentes */}
             <div className="mt-8">
-                <h2 className="text-lg font-medium text-[var(--color-text)] mb-4">Dépenses récentes</h2>
+                <h2 className="text-lg font-medium text-[var(--color-text)] mb-4">Recent Expenses</h2>
                 <div className="bg-[var(--color-bg-card)] shadow overflow-hidden sm:rounded-md">
                     <ul className="divide-y divide-gray-200">
                         {recentExpenses.map((expense) => (

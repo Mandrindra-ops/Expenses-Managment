@@ -67,8 +67,11 @@ const ExpenseContent: React.FC = () => {
 
   // Fonction utilitaire pour télécharger le reçu
 const handleDownloadReceipt = async (expenseId: number) => {
+  console.log("Downloading receipt for expense ID:", expenseId);
   try {
-    const response = await fetch(`/api/receipt/${expenseId}`);
+    const response = await fetch(`http://localhost:5000/api/receipt/${expenseId}`);
+    // const response = await api.get(`/receipt/${expenseId}`)
+
     if (!response.ok) {
       throw new Error("Error downloading receipt");
     }
@@ -80,7 +83,8 @@ const handleDownloadReceipt = async (expenseId: number) => {
 
     // Ici on laisse le backend donner le vrai nom du fichier
     const disposition = response.headers.get("Content-Disposition");
-    let fileName = `receipt-${expenseId}.pdf`;
+    
+    let fileName = `receipt-${expenseId}.png`;
 
     if (disposition && disposition.includes("filename=")) {
       fileName = disposition.split("filename=")[1].replace(/"/g, "");
@@ -105,6 +109,8 @@ const [newExpense, setNewExpense] = useState({
   description: '',
   amount: '',
   date: '',
+  startDate: '',
+  endDate: '',
   categoryId: '',
   type: 'OneTime',
 });

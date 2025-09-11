@@ -209,6 +209,11 @@ const ExpenseContent: React.FC = () => {
                   {c.name}
                 </option>
               ))}
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>

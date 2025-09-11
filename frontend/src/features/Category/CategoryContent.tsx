@@ -118,6 +118,9 @@ const CategoryContent: React.FC = () => {
       {/* Head */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
+          <p className="text-[var(--color-text-sub)]">
+            Keep track of all the expense category
+          </p>
           <h1 className="text-2xl font-bold text-[var(--color-text)]">
             My category
           </h1>

@@ -39,6 +39,7 @@
 .flou {
   background: linear-gradient(rgb(0,0,0,0.35), rgb(0,0,0,0.35)); /* opacité augmentée */
   backdrop-filter: blur(4px); /* flou renforcé */
+<<<<<<< HEAD
 }
 
 .money-particles {
@@ -68,4 +69,6 @@
     transform: translateY(-110vh) rotate(360deg);
     opacity: 0;
   }
+=======
+>>>>>>> 366a30a (feat: cahnging the theme)
 }

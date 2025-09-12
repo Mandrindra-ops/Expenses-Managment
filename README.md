@@ -6,6 +6,7 @@
 - RATIANDRAIBE Fanampinirina Miharisoa David Fils / STD24190
 - RAZAFIARIVELO Miriame Asmine / STD24177
 - RAKOTOARIMALALA Amboaraniaina / STD24115
+- ANDRIANIAINA Valisoa Sedra Fanantenana / STD24088
 - RAFANOMEZANTSOA Iaro Mandrindra Fitiavana / STD24160
 
 ---

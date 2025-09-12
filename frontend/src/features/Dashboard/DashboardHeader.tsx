@@ -34,7 +34,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             const alertData = res.data;
 
             if (alertData.alert) {
-                const currentDiff = alertData.totalExpenses - alertData.totalIncomes;
+                const currentDiff = alertData.totalExpenses - alertData.totalIncome;
 
                 if (lastAlertDiffRef.current === null || currentDiff !== lastAlertDiffRef.current) {
                     setNotifications(prev => [...prev, { message: alertData.message }]);

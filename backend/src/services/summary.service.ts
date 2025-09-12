@@ -98,6 +98,8 @@ export class SummaryService {
         message: `You've exceeded your monthly budget by $${
           summary.totalExpenses - summary.totalIncome
         }`,
+        totalExpenses: `${summary.totalExpenses}`,
+        totalIncome: `${summary.totalIncome}`,
       };
     }
     return { alert: false };
